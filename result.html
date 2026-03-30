@@ -8,6 +8,7 @@
     <style>
         :root { 
             --ink: #1a1208; --paper: #f5f0e8; --gold: #b8860b; --border: #c8b99a;
+            /* 針對 iPhone 底部安全區域 */
             --safe-bottom: env(safe-area-inset-bottom);
         }
 
@@ -21,19 +22,20 @@
             justify-content: center; 
             align-items: center; 
             min-height: 100vh;
-            /* 針對手機橫向與直向的內距優化 */
+            /* 調整整體內距，確保卡片不貼邊 */
             padding: 20px 20px calc(20px + var(--safe-bottom));
         }
 
         .result-card { 
             background: white; 
-            padding: clamp(30px, 8vw, 60px); /* 寬度越大，內距越大 */
+            padding: clamp(30px, 8vw, 60px); /* 隨著螢幕變大，內距也變大 */
             text-align: center; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
             border-radius: 8px; 
             width: 100%;
-            max-width: 480px; /* iPad 以上維持這個寬度 */
+            max-width: 450px; /* iPad 以上維持這個寬度 */
             border: 1px solid var(--border);
+            /* 加入一點淡入動畫，提升質感 */
             animation: fadeIn 0.6s ease-out;
         }
 
@@ -45,40 +47,46 @@
         h2 { 
             font-family: 'Playfair Display', serif; 
             color: var(--gold); 
-            letter-spacing: 4px; 
+            letter-spacing: 3px; 
             font-size: 1.2rem;
-            margin: 0;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
         }
 
         .score-label {
             font-size: 0.9rem;
             color: #666;
-            margin-top: 15px;
             letter-spacing: 1px;
+            margin-bottom: 5px;
         }
 
         .score { 
-            /* 使用 clamp 讓分數在手機不會溢出，在桌機夠大 */
+            /* === 這是修正 ugly 的核心！！！ === */
+            /* 使用 clamp 讓分數在手機不溢出（最小 60px），在桌機夠大（最大 100px） */
             font-size: clamp(60px, 20vw, 100px); 
             font-weight: bold; 
-            margin: 10px 0; 
+            margin: 10px 0 30px 0; 
             color: var(--ink);
             line-height: 1;
+            /* 使用單欄字體，數字看起來更整齊 */
             font-family: 'DM Mono', monospace;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            display: inline-block;
+            width: 100%;
         }
 
         .detail-box { 
             display: flex; 
             justify-content: space-around; 
-            margin: 30px 0; 
-            border-top: 1px solid #eee; 
-            border-bottom: 1px solid #eee;
-            padding: 20px 0;
+            margin-bottom: 40px; 
         }
 
         .detail-item { flex: 1; }
+        .detail-item:first-child { border-right: 1px solid #eee; }
+
         .detail-val { 
-            font-size: 1.8rem; 
+            font-size: 2rem; 
             font-weight: bold; 
             font-family: 'DM Mono', monospace;
         }
@@ -106,14 +114,21 @@
             font-size: 1rem;
             font-weight: bold;
             letter-spacing: 1px;
-            transition: 0.3s;
+            transition: all 0.3s;
             display: block;
         }
 
+        /* 次要按鈕樣式 */
         .btn-outline {
             background: transparent;
             color: var(--ink);
             border: 1.5px solid var(--ink);
+        }
+
+        /* 移動端點擊回饋 */
+        .btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
         }
 
         .btn:hover {
@@ -126,13 +141,14 @@
         @media (max-width: 320px) {
             .result-card { padding: 20px; }
             .score { font-size: 50px; }
+            .detail-val { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
     <div class="result-card">
         <h2>REPORT</h2>
-        <p class="score-label">OVERALL SCORE</p>
+        <p class="score-label">您的測驗得分為</p>
         <div class="score" id="score-val">0</div>
         
         <div class="detail-box">
@@ -140,14 +156,14 @@
                 <div class="detail-val" id="res-correct" style="color: #1a4a2e;">0</div>
                 <span class="detail-label">答對題數</span>
             </div>
-            <div class="detail-item" style="border-left: 1px solid #eee;">
+            <div class="detail-item">
                 <div class="detail-val" id="res-total">0</div>
                 <span class="detail-label">總題數</span>
             </div>
         </div>
 
         <div class="btn-group">
-            <a href="index.html" class="btn">重新開始測驗</a>
+            <a href="index.html" class="btn">重新開始新測驗</a>
             <a href="history.html" class="btn btn-outline">查看成長趨勢表</a>
         </div>
     </div>
@@ -160,7 +176,7 @@
                 return;
             }
 
-            // 分數動態跑跳效果 (微交互)
+            // 加一個分數動態跑跳的效果，增加爽感
             let currentScore = 0;
             const targetScore = data.score;
             const timer = setInterval(() => {
