@@ -11,16 +11,20 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--paper); margin: 0; font-family: 'Noto Serif TC', serif; padding-bottom: calc(110px + env(safe-area-inset-bottom)); }
         
-        /* Header：行動優先佈局 */
+        /* Header：修正擠壓問題 */
         header { background: var(--ink); color: white; position: sticky; top: 0; z-index: 100; padding: calc(10px + env(safe-area-inset-top)) 15px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .header-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+        .header-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 85px 1fr 85px; align-items: center; }
+        
         .header-left { display: flex; align-items: center; }
-        .home-icon { cursor: pointer; color: var(--gold); text-decoration: none; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
-        .header-center { text-align: center; }
-        .status-val { font-family: 'DM Mono', monospace; font-size: 14px; color: white; white-space: nowrap; }
+        .home-icon { cursor: pointer; color: var(--gold); text-decoration: none; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+        
+        .header-center { text-align: center; min-width: 0; } /* min-width 0 防止 flex/grid 溢出 */
+        .status-val { font-family: 'DM Mono', monospace; font-size: 14px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .status-progress { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gold); margin-top: 1px; font-weight: 500; }
+
         .header-right { text-align: right; }
-        .finish-btn { background: var(--gold); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .finish-btn { background: var(--gold); color: white; border: none; padding: 7px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap; }
+        .finish-btn:active { background: #d4a017; transform: scale(0.95); }
 
         .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.1); z-index: 101; }
         #progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
@@ -31,8 +35,8 @@
         .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .q-meta { font-family: 'Noto Serif TC', serif; color: var(--gold); font-size: 14px; font-weight: 700; }
         
-        /* ↺ 重答按鈕顯眼化 */
-        .redo-btn { font-size: 12px; cursor: pointer; color: var(--gold); border: 1px solid var(--gold); padding: 5px 14px; border-radius: 20px; transition: 0.1s; font-weight: 700; background: #fff; }
+        /* ↺ 重答按鈕優化 */
+        .redo-btn { font-size: 12px; cursor: pointer; color: var(--gold); border: 1.5px solid var(--gold); padding: 5px 14px; border-radius: 20px; transition: 0.1s; font-weight: 700; background: #fff; box-shadow: 0 2px 4px rgba(184,134,11,0.1); }
         .redo-btn:active { transform: scale(0.9); background: #fffaf0; }
         
         .q-text { font-size: 18px; line-height: 1.6; margin-bottom: 25px; color: var(--ink); font-weight: 500; }
@@ -47,11 +51,13 @@
         
         .analysis-box { margin-top: 25px; padding: 18px; background: #fcf8ef; border-left: 4px solid var(--gold); font-size: 14px; line-height: 1.6; display: none; }
 
-        /* Footer 導覽修正：按鈕空間極大化 */
+        /* Footer 導覽 */
         footer { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--border); padding: 12px 15px calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -5px 15px rgba(0,0,0,0.03); }
         .footer-inner { max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: center; width: 100%; }
         .nav-group { display: flex; align-items: center; gap: 8px; width: 100%; }
         .nav-btn { flex: 1.5; padding: 12px 5px; border: 1px solid var(--ink); background: transparent; cursor: pointer; font-size: 14px; font-weight: 500; border-radius: 8px; color: #000; text-align: center; }
+        .nav-btn:hover:not(:disabled) { background: var(--ink); color: white; }
+        .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
         #nav-pos-btn { flex: 1; font-family: 'DM Mono', monospace; font-size: 14px; background: #f9f9f9; border: 1px solid var(--border); padding: 12px 0; cursor: pointer; color: #000; border-radius: 8px; text-align: center; font-weight: bold; }
 
         /* Modal */
@@ -63,9 +69,9 @@
         .nav-dot.current { border: 2px solid var(--gold); color: var(--gold); font-weight: bold; }
 
         @media (max-width: 480px) {
-            .header-inner { grid-template-columns: 60px 1fr 60px; }
+            .header-inner { grid-template-columns: 75px 1fr 75px; }
             .home-icon span { display: none; }
-            .nav-btn { flex: 1.2; font-size: 13px; }
+            .nav-btn { font-size: 13px; }
         }
     </style>
 </head>
@@ -81,12 +87,16 @@
 
     <header>
         <div class="header-inner">
-            <div class="header-left"><div class="home-icon" onclick="goHome()">🏠 <span>HOME</span></div></div>
+            <div class="header-left">
+                <div class="home-icon" onclick="goHome()">🏠 <span>HOME</span></div>
+            </div>
             <div class="header-center">
                 <div class="status-val" id="header-title">正在載入</div>
                 <div class="status-progress" id="stat-answered">0 / 0</div>
             </div>
-            <div class="header-right"><button class="finish-btn" onclick="finish()">🏁 交卷</button></div>
+            <div class="header-right">
+                <button class="finish-btn" onclick="finish()">🏁 交卷</button>
+            </div>
         </div>
     </header>
 
@@ -118,10 +128,7 @@
         let currentQuestions = [], userAnswers = [], curIdx = 0;
 
         window.onload = function() {
-            if (typeof DATA === 'undefined' || !DATA[config.sub]) {
-                alert('數據載入失敗，請檢查 data.js 是否正確引用。');
-                return window.location.href = 'index.html';
-            }
+            if (typeof DATA === 'undefined' || !DATA[config.sub]) return window.location.href = 'index.html';
             let pool = [];
             if (config.s === 'all') {
                 for (let year in DATA[config.sub]) {
@@ -132,10 +139,7 @@
             } else {
                 currentQuestions = (DATA[config.sub][config.s] || []).map(q => ({...q, session: config.s})).sort(() => Math.random() - 0.5);
             }
-            if (currentQuestions.length === 0) {
-                alert('找不到該屆題目資料！');
-                return window.location.href = 'index.html';
-            }
+            if (currentQuestions.length === 0) return window.location.href = 'index.html';
             userAnswers = new Array(currentQuestions.length).fill(null);
             document.getElementById('header-title').textContent = (config.sub==='trade'?'進出口外匯':'國外匯兌');
             renderQuestion();
