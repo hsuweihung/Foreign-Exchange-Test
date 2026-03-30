@@ -4,62 +4,220 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>初階外匯考古題練習站</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Playfair+Display:wght@700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
     <style>
-        :root { --ink: #1a1208; --paper: #f5f0e8; --gold: #b8860b; --border: #c8b99a; }
+        :root { 
+            --ink: #1a1208; --paper: #f5f0e8; --gold: #b8860b; --border: #c8b99a; 
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif TC', serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom); background-image: radial-gradient(ellipse at 20% 0%, rgba(184,134,11,0.08) 0%, transparent 60%); }
-        .container { text-align: center; padding: 40px 20px; max-width: 650px; width: 100%; }
-        h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 8vw, 36px); margin-bottom: 10px; }
-        .sub { font-size: 14px; color: #6b5a3e; margin-bottom: 40px; letter-spacing: 1px; }
-        .selection-box { background: white; padding: 24px; border: 1px solid var(--border); margin-bottom: 20px; border-radius: 4px; box-shadow: 0 4px 12px rgba(26,18,8,0.08); }
-        .label { font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
-        .pill-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        .pill { padding: 10px 20px; border: 1.5px solid var(--border); background: white; cursor: pointer; transition: 0.2s; font-size: 14px; flex-grow: 1; max-width: 200px; }
-        .pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-        .start-btn { margin-top: 30px; padding: 16px; background: var(--ink); color: white; border: none; cursor: pointer; font-size: 16px; letter-spacing: 3px; border-radius: 2px; width: 100%; max-width: 320px; transition: 0.3s; }
-        .start-btn:hover { background: var(--gold); transform: translateY(-2px); }
-        .history-link { display: block; margin-top: 25px; color: var(--gold); text-decoration: none; font-size: 13px; letter-spacing: 1px; }
-        @media (max-width: 480px) { .pill { font-size: 13px; padding: 8px 12px; } }
+
+        body { 
+            background: var(--paper); 
+            color: var(--ink); 
+            font-family: 'Noto Serif TC', serif; 
+            margin: 0; 
+            padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(184,134,11,0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(26,18,8,0.03) 0%, transparent 40%);
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 600px; 
+            text-align: center; 
+            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header { margin-bottom: 40px; }
+
+        h1 { 
+            font-family: 'Playfair Display', serif; 
+            font-size: clamp(32px, 8vw, 42px); 
+            margin: 0 0 10px 0; 
+            letter-spacing: -0.5px;
+        }
+
+        .sub { 
+            font-size: 0.9rem; 
+            color: #6b5a3e; 
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* 選擇區塊 */
+        .selection-box { 
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 24px; 
+            border: 1px solid var(--border); 
+            margin-bottom: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 30px rgba(26,18,8,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .selection-box:hover { transform: translateY(-2px); }
+
+        .label { 
+            font-size: 11px; 
+            color: var(--gold); 
+            letter-spacing: 3px; 
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* 關鍵 RWD: 預設為 Grid 2 欄，iPad 以上轉為 Flex Row */
+        .pill-group { 
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .pill { 
+            padding: 14px 10px; 
+            border: 1.5px solid var(--border); 
+            background: white; 
+            cursor: pointer; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            font-size: 14px; 
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .pill:active { transform: scale(0.96); }
+
+        .pill.active { 
+            background: var(--ink); 
+            color: var(--paper); 
+            border-color: var(--ink); 
+            box-shadow: 0 4px 12px rgba(26,18,8,0.2);
+        }
+
+        /* 按鈕優化 */
+        .start-btn { 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: var(--ink); 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 18px; 
+            letter-spacing: 5px; 
+            border-radius: 8px; 
+            width: 100%; 
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(26,18,8,0.15);
+        }
+
+        .start-btn:hover { 
+            background: var(--gold); 
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(184,134,11,0.2);
+        }
+
+        .history-link { 
+            display: inline-block;
+            margin-top: 30px; 
+            color: var(--gold); 
+            text-decoration: none; 
+            font-size: 14px; 
+            letter-spacing: 1px;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .history-link:hover { border-bottom-color: var(--gold); }
+
+        /* iPad & Desktop 調整 */
+        @media (min-width: 600px) {
+            .pill-group {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .pill {
+                flex: 0 1 auto;
+                min-width: 120px;
+                padding: 12px 24px;
+            }
+        }
+
+        /* 針對 iPhone SE 等窄屏優化 */
+        @media (max-width: 360px) {
+            h1 { font-size: 28px; }
+            .selection-box { padding: 16px; }
+            .pill { font-size: 13px; padding: 12px 5px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>外匯考古題練習站</h1>
-        <p class="sub">模擬考模式 · 官方題庫 44-46 屆</p>
+        <header>
+            <h1>外匯練習站</h1>
+            <div class="sub">模擬考試系統 · 44-46 屆</div>
+        </header>
+
         <div class="selection-box">
-            <div class="label">選擇屆次</div>
+            <span class="label">SELECT SESSION</span>
             <div class="pill-group" id="session-group">
                 <div class="pill active" data-val="44">第 44 屆</div>
                 <div class="pill" data-val="45">第 45 屆</div>
                 <div class="pill" data-val="46">第 46 屆</div>
-                <div class="pill" data-val="all">全部混合 (模擬考)</div>
+                <div class="pill" data-val="all">模擬考模式</div>
             </div>
         </div>
+
         <div class="selection-box">
-            <div class="label">選擇科目</div>
+            <span class="label">SELECT SUBJECT</span>
             <div class="pill-group" id="subject-group">
                 <div class="pill active" data-val="remittance">國外匯兌業務</div>
-                <div class="pill" data-val="trade">進出口外匯業務</div>
+                <div class="pill" data-val="trade">進出口外匯</div>
             </div>
         </div>
+
         <div class="selection-box">
-            <div class="label">練習模式</div>
+            <span class="label">PRACTICE MODE</span>
             <div class="pill-group" id="mode-group">
                 <div class="pill active" data-val="practice">🎯 練習模式</div>
                 <div class="pill" data-val="exam">📝 考試模式</div>
             </div>
         </div>
-        <button class="start-btn" onclick="start()">開始測驗 →</button>
-        <a href="history.html" class="history-link">📊 查看歷史成長趨勢</a>
+
+        <button class="start-btn" onclick="start()">開始測驗 START</button>
+        <a href="history.html" class="history-link">📊 查看成長趨勢分析報告</a>
     </div>
+
     <script>
         document.querySelectorAll('.pill').forEach(pill => {
             pill.onclick = function() {
+                // 觸覺回饋（如有支援）
+                if (window.navigator.vibrate) window.navigator.vibrate(10);
                 this.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
                 this.classList.add('active');
             };
         });
+
         function start() {
             const s = document.querySelector('#session-group .active').dataset.val;
             const sub = document.querySelector('#subject-group .active').dataset.val;
