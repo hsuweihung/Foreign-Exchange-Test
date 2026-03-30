@@ -13,23 +13,24 @@
         .result-card { background: white; padding: 40px 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-radius: 12px; width: 100%; max-width: 450px; border: 1px solid var(--border); margin-bottom: 30px; }
         h2 { font-family: 'Playfair Display', serif; color: var(--gold); letter-spacing: 4px; margin: 0 0 15px; font-size: 1.2rem; }
         .score-wrap { border-bottom: 2px solid #f8f8f8; padding-bottom: 25px; margin-bottom: 25px; }
-        .score { font-size: clamp(70px, 22vw, 110px); font-weight: bold; color: var(--ink); font-family: 'DM Mono'; line-height: 1; margin: 10px 0; }
+        .score { font-size: 110px; font-weight: bold; color: var(--ink); font-family: 'DM Mono'; line-height: 1; margin: 10px 0; }
         
         .detail-box { display: flex; justify-content: space-around; }
         .detail-item b { display: block; font-size: 26px; font-family: 'DM Mono'; margin-bottom: 5px; }
         .detail-item small { color: #999; letter-spacing: 1px; font-size: 12px; }
 
         .btn-group { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 450px; }
-        .btn { padding: 18px; background: var(--ink); color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-weight: bold; text-align: center; transition: 0.3s; font-size: 16px; }
+        .btn { padding: 18px; background: var(--ink); color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-weight: bold; text-align: center; font-size: 16px; }
         .btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
         
-        /* 錯題區塊樣式優化 */
         #wrong-section { width: 100%; max-width: 500px; margin-top: 50px; }
         .wrong-title { color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 25px; font-size: 1.2rem; font-weight: bold; text-align: center; }
         .wrong-item { background: white; border-left: 5px solid var(--red); padding: 25px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: left; }
         .ans-correct { color: var(--green); font-weight: bold; font-size: 15px; margin-top: 10px; display: block; }
         .ans-user { color: var(--red); font-size: 14px; margin-top: 5px; display: block; opacity: 0.8; }
         .analysis-box { margin-top: 15px; padding: 15px; background: #fdfaf5; border: 1px dashed var(--border); border-radius: 6px; font-size: 14px; line-height: 1.6; color: #5d4a26; }
+
+        @media (max-width: 480px) { .score { font-size: 80px; } }
     </style>
 </head>
 <body>
@@ -47,71 +48,49 @@
 
     <div class="btn-group">
         <a href="index.html" class="btn">重新開始測驗</a>
-        <a href="history.html" class="btn btn-outline">📊 查看歷史成長趨勢報告</a>
-    </div>
-
-    <div id="wrong-section" style="display:none;">
-        <div class="wrong-title">錯題檢討與深度解析</div>
-        <div id="wrong-list"></div>
+        <a href="history.html" class="btn btn-outline">📊 查看歷史紀錄</a>
     </div>
 
     <script>
         window.onload = function() {
             const data = JSON.parse(localStorage.getItem('last_result'));
             const full = JSON.parse(localStorage.getItem('last_exam_full'));
-            if (!data) return location.href = 'index.html';
+            if (!data) { setTimeout(() => { location.href = 'index.html'; }, 1000); return; }
 
-            // 分數跑分動畫
-            let cur = 0; const target = data.score;
-            const t = setInterval(() => {
-                if(cur >= target) { 
-                    document.getElementById('score-val').textContent = target; 
-                    clearInterval(t); 
-                } else { 
-                    cur += Math.ceil(target/15); 
-                    if(cur > target) cur = target; 
-                    document.getElementById('score-val').textContent = cur; 
-                }
-            }, 35);
+            let cur = 0; const target = parseFloat(data.score);
+            const scoreEl = document.getElementById('score-val');
+            if (target === 0) { scoreEl.textContent = "0"; }
+            else {
+                const t = setInterval(() => {
+                    cur += Math.ceil(target/15);
+                    if(cur >= target) { scoreEl.textContent = target; clearInterval(t); }
+                    else { scoreEl.textContent = Math.floor(cur); }
+                }, 35);
+            }
 
             document.getElementById('res-correct').textContent = data.correct;
             document.getElementById('res-total').textContent = data.total;
 
-            // 渲染錯題
-            if (full) {
-                const wrongIndexes = [];
+            if (full && full.questions) {
+                const list = document.getElementById('wrong-list');
+                let hasWrong = false;
                 full.questions.forEach((q, i) => {
-                    if (full.answers[i] !== null && full.answers[i] !== q.answer) {
-                        wrongIndexes.push(i);
-                    }
-                });
-
-                if (wrongIndexes.length > 0) {
-                    document.getElementById('wrong-section').style.display = 'block';
-                    const list = document.getElementById('wrong-list');
-                    
-                    wrongIndexes.forEach((idx) => {
-                        const q = full.questions[idx];
-                        const userAns = full.answers[idx];
+                    const userAns = full.answers[i];
+                    if (userAns !== null && userAns !== q.answer) {
+                        hasWrong = true;
                         const div = document.createElement('div');
                         div.className = 'wrong-item';
                         div.innerHTML = `
-                            <div style="color:var(--gold); font-size:11px; font-family:'DM Mono'; margin-bottom:10px;">
-                                FROM 第 ${q._s} 屆 / 題號 ${q.id}
-                            </div>
-                            <div style="margin-bottom:15px; font-weight:bold; line-height:1.7; color:var(--ink); font-size:16px;">
-                                ${q.text}
-                            </div>
+                            <div style="color:var(--gold); font-size:11px; font-family:'DM Mono'; margin-bottom:10px;">FROM 第 ${q._s || q.session} 屆 / 題號 ${q.id}</div>
+                            <div style="margin-bottom:15px; font-weight:bold; line-height:1.7; color:var(--ink); font-size:16px;">${q.text}</div>
                             <span class="ans-correct">✓ 正確答案：${q.options[q.answer]}</span>
                             <span class="ans-user">✗ 你的回答：${q.options[userAns]}</span>
-                            <div class="analysis-box">
-                                <b style="color:var(--gold);">💡 專家解析與考點：</b><br>
-                                ${q.analysis || '此題暫無詳細解析，請參考官方教材規範。'}
-                            </div>
+                            <div class="analysis-box"><b style="color:var(--gold);">💡 解析：</b><br>${q.analysis || '此題暫無詳細解析。'}</div>
                         `;
                         list.appendChild(div);
-                    });
-                }
+                    }
+                });
+                if (hasWrong) document.getElementById('wrong-section').style.display = 'block';
             }
         };
     </script>

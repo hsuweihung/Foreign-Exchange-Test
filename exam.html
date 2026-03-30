@@ -227,18 +227,54 @@
 
         function goHome() { if(confirm('確定要回首頁嗎？測驗進度將不予儲存。')) window.location.href='index.html'; }
 
-        function finish() {
-            const empty = currentQuestions.length - userAnswers.filter(a => a !== null).length;
-            if(!confirm(empty > 0 ? `還有 ${empty} 題未答，確定交卷？` : '確定評分？')) return;
-            const correct = currentQuestions.filter((q, i) => userAnswers[i] === q.answer).length;
-            const scorePerQ = config.sub === 'trade' ? 1.25 : 2;
-            const finalScore = Math.round(correct * scorePerQ * 10) / 10;
-            const result = { id: Date.now(), timestamp: new Date().toLocaleString(), correct, total: currentQuestions.length, score: finalScore, subject: config.sub === 'trade' ? '進出口外匯' : '國外匯兌' };
-            let hist = JSON.parse(localStorage.getItem('exam_history') || '[]');
-            hist.unshift(result);
-            localStorage.setItem('exam_history', JSON.stringify(hist));
-            window.location.href = `result.html?score=${finalScore}&correct=${correct}&total=${currentQuestions.length}`;
+function finish() {
+    const empty = currentQuestions.length - userAnswers.filter(a => a !== null).length;
+    if(!confirm(empty > 0 ? `還有 ${empty} 題未答，確定交卷？` : '確定評分？')) return;
+    
+    let mistakes = JSON.parse(localStorage.getItem('mistake_bank') || '{}');
+    const sub = config.sub; 
+    if (!mistakes[sub]) mistakes[sub] = [];
+
+    let correctCount = 0;
+    currentQuestions.forEach((q, i) => {
+        if (userAnswers[i] === q.answer) {
+            correctCount++;
+        } else if (userAnswers[i] !== null) {
+            // 存入錯題本 (Phase 1 邏輯)
+            if (!mistakes[sub].some(m => String(m.id) === String(q.id) && m.session === q.session)) {
+                mistakes[sub].push({ id: q.id, session: q.session });
+            }
         }
+    });
+    localStorage.setItem('mistake_bank', JSON.stringify(mistakes));
+
+    const scorePerQ = config.sub === 'trade' ? 1.25 : 2;
+    const finalScore = Math.round(correctCount * scorePerQ * 10) / 10;
+
+    // --- 【修復關鍵】儲存 result.html 需要的暫存資料 ---
+    const resultSummary = {
+        correct: correctCount,
+        total: currentQuestions.length,
+        score: finalScore,
+        subject: config.sub === 'trade' ? '進出口外匯' : '國外匯兌'
+    };
+    const resultFull = {
+        questions: currentQuestions.map(q => ({...q, _s: q.session})), // 加上 _s 避免與 session 變數混淆
+        answers: userAnswers
+    };
+    
+    localStorage.setItem('last_result', JSON.stringify(resultSummary));
+    localStorage.setItem('last_exam_full', JSON.stringify(resultFull));
+    // ----------------------------------------------
+
+    // 存入歷史紀錄
+    let hist = JSON.parse(localStorage.getItem('exam_history') || '[]');
+    hist.unshift({ id: Date.now(), timestamp: new Date().toLocaleString(), ...resultSummary });
+    localStorage.setItem('exam_history', JSON.stringify(hist));
+
+    // 跳轉
+    window.location.href = `result.html?score=${finalScore}&correct=${correctCount}&total=${currentQuestions.length}`;
+}
     </script>
 </body>
 </html>
