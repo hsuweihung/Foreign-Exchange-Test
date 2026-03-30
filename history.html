@@ -8,71 +8,186 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --ink: #1a1208; --paper: #f5f0e8; --gold: #b8860b; --border: #c8b99a; --red: #8b2020; --green: #1a4a2e; }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--paper); padding: calc(20px + env(safe-area-inset-top)) 20px calc(40px + env(safe-area-inset-bottom)); font-family: 'Noto Serif TC', serif; color: var(--ink); }
         .container { max-width: 800px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .clear-btn { background: transparent; border: none; color: #999; cursor: pointer; font-size: 13px; text-decoration: underline; }
+        
+        /* Header 重新佈局 */
+        header { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        
+        .clear-btn { background: transparent; border: 1px solid #ddd; color: #999; cursor: pointer; font-size: 11px; padding: 4px 8px; border-radius: 4px; transition: 0.2s; }
+        .clear-btn:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+        
         .home-btn { text-decoration: none; color: var(--ink); border: 1.5px solid var(--ink); padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: bold; }
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
-        .chart-container { background: white; padding: 25px 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #f8f8f8; }
-        @media (max-width: 600px) {
-            table, thead, tbody, th, td, tr { display: block; } thead { display: none; }
-            tr { border-bottom: 1.5px solid #eee; padding: 10px 0; }
-            td { padding-left: 45% !important; position: relative; text-align: right; font-size: 14px; }
-            td:before { content: attr(data-label); position: absolute; left: 15px; font-weight: bold; color: var(--gold); font-size: 11px; }
-        }
+
+        /* Tab 切換 */
+        .tab-group { display: flex; background: rgba(0,0,0,0.05); padding: 4px; border-radius: 10px; margin-bottom: 20px; }
+        .tab { flex: 1; text-align: center; padding: 10px; font-size: 14px; cursor: pointer; border-radius: 8px; transition: 0.2s; font-weight: bold; color: #888; }
+        .tab.active { background: white; color: var(--ink); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        /* 統計卡片 */
+        .stat-card { background: white; padding: 25px; border-radius: 12px; border: 1px solid var(--border); text-align: center; margin-bottom: 20px; }
+        .stat-label { font-size: 11px; color: var(--gold); letter-spacing: 2px; margin-bottom: 8px; display: block; font-weight: bold; }
+        .stat-value { font-size: 42px; font-weight: bold; font-family: 'DM Mono'; line-height: 1; }
+
+        /* 圖表區 */
+        .chart-container { background: white; padding: 20px 10px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 25px; height: 300px; position: relative; }
+        
+        /* 表格區 */
+        .table-wrap { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #fafafa; padding: 12px 15px; text-align: left; font-size: 12px; color: var(--gold); border-bottom: 1px solid #eee; }
+        td { padding: 12px 15px; border-bottom: 1px solid #f8f8f8; font-size: 14px; }
+
+        #empty-state { text-align: center; padding: 100px 20px; color: #bbb; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1 style="margin:0; font-size:24px;">成長趨勢</h1>
-            <div style="display:flex; gap:15px; align-items:center;">
-                <button class="clear-btn" onclick="clearAll()">清除所有紀錄</button>
-                <a href="index.html" class="home-btn">回首頁</a>
+            <div class="header-top">
+                <h1 style="margin:0; font-size:22px;">趨勢報告</h1>
+                <div class="header-actions">
+                    <button class="clear-btn" onclick="clearAll()">清除數據</button>
+                    <a href="index.html" class="home-btn">回首頁</a>
+                </div>
             </div>
         </header>
+
         <div id="main-content" style="display:none;">
-            <div class="stats-grid">
-                <div class="stat-card"><small style="color:var(--gold); letter-spacing:1px;">TOP SCORE</small><div style="font-size:28px; font-weight:bold; font-family:'DM Mono';" id="top-score">0</div></div>
-                <div class="stat-card"><small style="color:var(--gold); letter-spacing:1px;">AVERAGE</small><div style="font-size:28px; font-weight:bold; font-family:'DM Mono'; color:var(--green);" id="avg-rate">0%</div></div>
+            <div class="tab-group">
+                <div class="tab active" onclick="switchTab('exchange')">國外匯兌</div>
+                <div class="tab" onclick="switchTab('trade')">進出口外匯</div>
             </div>
-            <div class="chart-container"><canvas id="scoreChart" height="200"></canvas></div>
-            <div id="history-table-wrap"></div>
+
+            <div class="stat-card">
+                <span class="stat-label" id="current-subject-label">國外匯兌最高分</span>
+                <div class="stat-value" id="top-score">0</div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="scoreChart"></canvas>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>日期</th><th>得分</th><th>狀態</th></tr></thead>
+                    <tbody id="history-body"></tbody>
+                </table>
+            </div>
         </div>
-        <div id="empty-state" style="text-align:center; padding:100px 20px; color:#bbb;">目前尚無測驗紀錄</div>
+
+        <div id="empty-state">暫無紀錄</div>
     </div>
+
     <script>
-        window.onload = function() {
-            const hist = JSON.parse(localStorage.getItem('exam_history') || '[]');
-            if (hist.length > 0) {
-                document.getElementById('main-content').style.display = 'block';
-                document.getElementById('empty-state').style.display = 'none';
-                const scores = hist.map(h => h.score);
-                document.getElementById('top-score').textContent = Math.max(...scores);
-                const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-                document.getElementById('avg-rate').textContent = Math.round(avg) + '%';
-                renderTable(hist); renderChart(hist);
+        let myChart = null;
+        let currentTab = 'exchange';
+        let fullHistory = [];
+
+        // Chart.js 插件：繪製 70 分及格基準線
+        const chartLimitLinePlugin = {
+            id: 'chartLimitLine',
+            afterDraw(chart, args, options) {
+                const { ctx, chartArea: { left, right, top, bottom }, scales: { y } } = chart;
+                if (!options.value) return;
+                const yValue = y.getPixelForValue(options.value);
+                if (yValue < top || yValue > bottom) return;
+                ctx.save();
+                ctx.beginPath();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = '#8b2020';
+                ctx.setLineDash([6, 4]);
+                ctx.moveTo(left, yValue);
+                ctx.lineTo(right, yValue);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.font = 'bold 11px Noto Serif TC, serif';
+                ctx.fillStyle = '#8b2020';
+                ctx.textAlign = 'right';
+                ctx.fillText(options.label || '及格線', right, yValue - 5);
+                ctx.restore();
             }
         };
-        function renderTable(hist) {
-            let html = '<table><thead><tr><th>日期</th><th>科目</th><th>得分</th></tr></thead><tbody>';
-            hist.forEach(h => { html += `<tr><td data-label="日期">${h.timestamp.split(' ')[0]}</td><td data-label="科目">${h.subject}</td><td data-label="得分" style="font-weight:bold; color:${h.score >= 70 ? 'var(--green)' : 'var(--red)'}">${h.score}</td></tr>`; });
-            document.getElementById('history-table-wrap').innerHTML = html + '</tbody></table>';
+
+        Chart.register(chartLimitLinePlugin);
+
+        window.onload = function() {
+            fullHistory = JSON.parse(localStorage.getItem('exam_history') || '[]');
+            if (fullHistory.length > 0) {
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('empty-state').style.display = 'none';
+                renderPage();
+            }
+        };
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                t.classList.toggle('active', (i === 0 && tab === 'exchange') || (i === 1 && tab === 'trade'));
+            });
+            renderPage();
         }
-        function renderChart(hist) {
-            const logs = [...hist].reverse().slice(-10);
-            new Chart(document.getElementById('scoreChart').getContext('2d'), {
+
+        function renderPage() {
+            const filterKey = currentTab === 'exchange' ? '國外匯兌' : '進出口';
+            const filteredData = fullHistory.filter(h => h.subject.includes(filterKey));
+            document.getElementById('current-subject-label').textContent = `${filterKey}最高分`;
+            const scores = filteredData.map(h => h.score);
+            document.getElementById('top-score').textContent = scores.length > 0 ? Math.max(...scores) : 0;
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = filteredData.length > 0 ? filteredData.map(h => `
+                <tr>
+                    <td>${h.timestamp.split(' ')[0].slice(5)}</td>
+                    <td style="font-family:'DM Mono'; font-weight:bold;">${h.score}</td>
+                    <td style="color:${h.score >= 70 ? 'var(--green)' : 'var(--red)'}">${h.score >= 70 ? '合格' : '待加強'}</td>
+                </tr>
+            `).join('') : '<tr><td colspan="3" style="text-align:center; color:#ccc; padding:20px;">無此科目紀錄</td></tr>';
+            renderChart(filteredData);
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            const chartData = [...data].reverse();
+            const color = currentTab === 'exchange' ? '#b8860b' : '#2a5a8a';
+            myChart = new Chart(ctx, {
                 type: 'line',
-                data: { labels: logs.map(l => l.timestamp.split(' ')[0].slice(5)), datasets: [{ label: '得分', data: logs.map(l => l.score), borderColor: '#b8860b', backgroundColor: 'rgba(184,134,11,0.1)', fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
+                data: {
+                    labels: chartData.map(d => d.timestamp.split(' ')[0].slice(5)),
+                    datasets: [{
+                        data: chartData.map(d => d.score),
+                        borderColor: color,
+                        backgroundColor: color + '15',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: 'white'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: '#eee' }, ticks: { font: { family: 'DM Mono' } } },
+                        x: { grid: { display: false }, ticks: { font: { family: 'DM Mono', size: 10 } } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        chartLimitLine: { value: 70, label: '🏁 及格 70' }
+                    }
+                }
             });
         }
-        function clearAll() { if (confirm('確定要清除所有紀錄嗎？此動作無法恢復。')) { localStorage.clear(); location.reload(); } }
+
+        function clearAll() {
+            if (confirm('確定要清除所有紀錄嗎？')) {
+                localStorage.removeItem('exam_history');
+                location.reload();
+            }
+        }
     </script>
 </body>
 </html>
