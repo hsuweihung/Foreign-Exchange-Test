@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>成長趨勢分析</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --ink: #1a1208; --paper: #f5f0e8; --gold: #b8860b; --border: #c8b99a; --remittance: #b8860b; --trade: #4a4a4a; }
+        body { background: var(--paper); padding: calc(20px + env(safe-area-inset-top)) 20px; font-family: 'Noto Serif TC', serif; color: var(--ink); }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .btn { padding: 10px 20px; border: 1px solid var(--ink); cursor: pointer; background: transparent; text-decoration: none; color: var(--ink); font-size: 13px; }
+        .chart-container { background: white; padding: 20px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 30px; }
+        .table-wrap { background: white; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        th { background: #fafafa; font-size: 12px; color: var(--gold); }
+        .score-badge { font-family: 'DM Mono'; font-weight: bold; }
+        /* RWD Table */
+        @media (max-width: 600px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { border-bottom: 2px solid var(--border); padding: 10px 0; }
+            td { padding-left: 45% !important; position: relative; text-align: right; font-size: 14px; border: none; }
+            td:before { content: attr(data-label); position: absolute; left: 15px; font-weight: bold; color: var(--gold); font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><h1>成長趨勢</h1><div style="display:flex; gap:10px;"><button class="btn" onclick="clearHistory()" style="color:#999; border-color:#ccc;">清除</button><a href="index.html" class="btn">回首頁</a></div></header>
+        <div id="chart-section" class="chart-container" style="display:none;"><canvas id="scoreChart"></canvas></div>
+        <div id="history-content" class="table-wrap"></div>
+    </div>
+    <script>
+        window.onload = function() {
+            const history = JSON.parse(localStorage.getItem('exam_history') || '[]');
+            if (!history.length) { document.getElementById('history-content').innerHTML = '<div style="padding:50px; text-align:center; color:#999;">尚無紀錄</div>'; return; }
+            renderTable(history); renderChart(history);
+        };
+        function renderTable(history) {
+            let html = '<table><thead><tr><th>時間</th><th>科目</th><th>正確率</th><th>得分</th></tr></thead><tbody>';
+            history.forEach(h => {
+                html += `<tr><td data-label="時間" style="color:#999; font-size:12px;">${h.timestamp.split(' ')[0]}</td><td data-label="科目"><b>${h.subject}</b></td><td data-label="正確率">${h.correct} / ${h.total}</td><td data-label="得分" class="score-badge" style="color:${h.score>=70?'#1a4a2e':'#8b2020'}">${h.score}</td></tr>`;
+            });
+            document.getElementById('history-content').innerHTML = html + '</tbody></table>';
+        }
+        function renderChart(history) {
+            document.getElementById('chart-section').style.display = 'block';
+            const logs = [...history].reverse();
+            const remittance = logs.filter(h => h.subject === '國外匯兌');
+            const trade = logs.filter(h => h.subject === '進出口外匯');
+            new Chart(document.getElementById('scoreChart'), {
+                type: 'line',
+                data: {
+                    labels: logs.slice(-10).map(h => h.timestamp.split(' ')[0]),
+                    datasets: [
+                        { label: '匯兌', data: remittance.slice(-10).map(h => h.score), borderColor: '#b8860b', tension: 0.3 },
+                        { label: '進出口', data: trade.slice(-10).map(h => h.score), borderColor: '#4a4a4a', tension: 0.3 }
+                    ]
+                },
+                options: { scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+        function clearHistory() { if(confirm('確定清除？')) { localStorage.removeItem('exam_history'); location.reload(); } }
+    </script>
+</body>
+</html>

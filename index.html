@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>初階外匯考古題練習站</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root { --ink: #1a1208; --paper: #f5f0e8; --gold: #b8860b; --border: #c8b99a; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--paper); color: var(--ink); font-family: 'Noto Serif TC', serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom); background-image: radial-gradient(ellipse at 20% 0%, rgba(184,134,11,0.08) 0%, transparent 60%); }
+        .container { text-align: center; padding: 40px 20px; max-width: 650px; width: 100%; }
+        h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 8vw, 36px); margin-bottom: 10px; }
+        .sub { font-size: 14px; color: #6b5a3e; margin-bottom: 40px; letter-spacing: 1px; }
+        .selection-box { background: white; padding: 24px; border: 1px solid var(--border); margin-bottom: 20px; border-radius: 4px; box-shadow: 0 4px 12px rgba(26,18,8,0.08); }
+        .label { font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
+        .pill-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .pill { padding: 10px 20px; border: 1.5px solid var(--border); background: white; cursor: pointer; transition: 0.2s; font-size: 14px; flex-grow: 1; max-width: 200px; }
+        .pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+        .start-btn { margin-top: 30px; padding: 16px; background: var(--ink); color: white; border: none; cursor: pointer; font-size: 16px; letter-spacing: 3px; border-radius: 2px; width: 100%; max-width: 320px; transition: 0.3s; }
+        .start-btn:hover { background: var(--gold); transform: translateY(-2px); }
+        .history-link { display: block; margin-top: 25px; color: var(--gold); text-decoration: none; font-size: 13px; letter-spacing: 1px; }
+        @media (max-width: 480px) { .pill { font-size: 13px; padding: 8px 12px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>外匯考古題練習站</h1>
+        <p class="sub">模擬考模式 · 官方題庫 44-46 屆</p>
+        <div class="selection-box">
+            <div class="label">選擇屆次</div>
+            <div class="pill-group" id="session-group">
+                <div class="pill active" data-val="44">第 44 屆</div>
+                <div class="pill" data-val="45">第 45 屆</div>
+                <div class="pill" data-val="46">第 46 屆</div>
+                <div class="pill" data-val="all">全部混合 (模擬考)</div>
+            </div>
+        </div>
+        <div class="selection-box">
+            <div class="label">選擇科目</div>
+            <div class="pill-group" id="subject-group">
+                <div class="pill active" data-val="remittance">國外匯兌業務</div>
+                <div class="pill" data-val="trade">進出口外匯業務</div>
+            </div>
+        </div>
+        <div class="selection-box">
+            <div class="label">練習模式</div>
+            <div class="pill-group" id="mode-group">
+                <div class="pill active" data-val="practice">🎯 練習模式</div>
+                <div class="pill" data-val="exam">📝 考試模式</div>
+            </div>
+        </div>
+        <button class="start-btn" onclick="start()">開始測驗 →</button>
+        <a href="history.html" class="history-link">📊 查看歷史成長趨勢</a>
+    </div>
+    <script>
+        document.querySelectorAll('.pill').forEach(pill => {
+            pill.onclick = function() {
+                this.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            };
+        });
+        function start() {
+            const s = document.querySelector('#session-group .active').dataset.val;
+            const sub = document.querySelector('#subject-group .active').dataset.val;
+            const m = document.querySelector('#mode-group .active').dataset.val;
+            window.location.href = `exam.html?s=${s}&sub=${sub}&m=${m}`;
+        }
+    </script>
+</body>
+</html>

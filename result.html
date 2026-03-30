@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>測驗結果</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root { --ink: #1a1208; --paper: #f5f0e8; --gold: #b8860b; }
+        body { background: var(--paper); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Noto Serif TC', serif; padding: 20px; }
+        .result-card { background: white; padding: 40px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-radius: 8px; max-width: 450px; width: 100%; border: 1px solid #c8b99a; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); letter-spacing: 2px; font-size: 32px; }
+        .score { font-size: 80px; font-weight: bold; margin: 20px 0; color: var(--ink); }
+        .detail { display: flex; justify-content: space-around; margin: 30px 0; border-top: 1px solid #eee; padding-top: 25px; }
+        .btn { background: var(--ink); color: white; padding: 15px 30px; border: none; cursor: pointer; border-radius: 2px; text-decoration: none; display: inline-block; width: 100%; margin-top: 10px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="result-card">
+        <h2>FINISH</h2>
+        <p>本次測驗得分</p>
+        <div class="score" id="score-val">0</div>
+        <div class="detail">
+            <div><div id="res-correct" style="color:green; font-size:24px; font-weight:bold;">0</div><small>答對</small></div>
+            <div><div id="res-total" style="font-size:24px; font-weight:bold;">0</div><small>總題數</small></div>
+        </div>
+        <a href="index.html" class="btn">重新開始新測驗</a>
+        <a href="history.html" class="btn" style="background:transparent; color:var(--ink); border:1px solid var(--ink); margin-top:15px;">查看成長趨勢</a>
+    </div>
+    <script>
+        const data = JSON.parse(localStorage.getItem('last_result'));
+        if (!data) location.href = 'index.html';
+        document.getElementById('score-val').textContent = data.score;
+        document.getElementById('res-correct').textContent = data.correct;
+        document.getElementById('res-total').textContent = data.total;
+    </script>
+</body>
+</html>
