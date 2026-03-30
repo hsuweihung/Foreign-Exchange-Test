@@ -30,7 +30,6 @@
         .question-card { background: white; padding: 30px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 400px; border-radius: 4px; position: relative; }
         .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 12px; }
         
-        /* Q-Meta: 只顯示屆數 */
         .q-meta { font-family: 'Noto Serif TC', serif; color: var(--gold); font-size: 14px; font-weight: 700; letter-spacing: 1px; }
         .redo-btn { font-size: 12px; cursor: pointer; color: #888; border: 1px solid #ddd; padding: 4px 12px; border-radius: 20px; transition: 0.2s; }
         .redo-btn:hover { border-color: var(--gold); color: var(--gold); }
@@ -47,18 +46,18 @@
         
         .analysis-box { margin-top: 30px; padding: 20px; background: #fcf8ef; border-left: 4px solid var(--gold); font-size: 15px; line-height: 1.7; display: none; }
 
-        /* Footer: 緊湊並列 */
+        /* Footer 導覽 */
         footer { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--border); padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -5px 15px rgba(0,0,0,0.03); }
         .footer-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: center; position: relative; }
         
         .nav-group { display: flex; align-items: center; gap: 8px; }
-        .nav-btn { padding: 10px 15px; border: 1px solid var(--ink); background: transparent; cursor: pointer; font-size: 14px; border-radius: 4px; transition: 0.2s; min-width: 90px; }
+        .nav-btn { padding: 10px 15px; border: 1px solid var(--ink); background: transparent; cursor: pointer; font-size: 14px; border-radius: 4px; transition: 0.2s; min-width: 90px; color: #000; }
         .nav-btn:hover:not(:disabled) { background: var(--ink); color: white; }
         .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
         
         #nav-pos-btn { font-family: 'DM Mono', monospace; font-size: 15px; background: #f9f9f9; border: 1px solid var(--border); padding: 8px 12px; cursor: pointer; color: var(--ink); border-radius: 4px; min-width: 75px; text-align: center; }
         
-        .finish-btn { position: absolute; right: 0; background: var(--gold); color: white; border: none; font-weight: bold; min-width: 80px; }
+        .finish-btn { position: absolute; right: 0; background: var(--gold); color: white; border: none; font-weight: bold; min-width: 80px; height: 38px; cursor: pointer; border-radius: 4px; }
 
         /* Modal */
         #nav-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26,18,8,0.9); z-index: 1000; padding: 40px 20px; overflow-y: auto; backdrop-filter: blur(5px); }
@@ -72,8 +71,6 @@
             .nav-btn { min-width: 70px; font-size: 12px; }
             .finish-btn { position: relative; margin-left: 10px; min-width: 65px; }
             .footer-inner { justify-content: center; }
-            .header-inner { font-size: 14px; }
-            .home-icon { font-size: 14px; }
         }
     </style>
 </head>
@@ -123,7 +120,7 @@
                 <button id="nav-pos-btn" onclick="toggleMap()">0 / 0</button>
                 <button id="next-btn" class="nav-btn" onclick="nextQuestion()">下一題 →</button>
             </div>
-            <button class="nav-btn finish-btn" onclick="finish()">交卷</button>
+            <button class="finish-btn" onclick="finish()">交卷</button>
         </div>
     </footer>
 
@@ -138,7 +135,6 @@
             let pool = [];
             if (config.s === 'all') {
                 for (let year in DATA[config.sub]) {
-                    // 關鍵注入：為每題記住屆數
                     const items = DATA[config.sub][year].map(q => ({...q, session: year}));
                     pool.push(...items);
                 }
@@ -148,7 +144,7 @@
             }
 
             userAnswers = new Array(currentQuestions.length).fill(null);
-            document.getElementById('header-title').textContent = (config.sub==='trade'?'進出口外匯':'國外匯兌');
+            document.getElementById('header-title').textContent = (config.sub==='trade'?'進出口':'國外匯兌');
             renderQuestion();
             updateStatus();
         };
@@ -157,7 +153,6 @@
             const q = currentQuestions[curIdx];
             const ans = userAnswers[curIdx];
             
-            // UI 更新：只顯示 第 XX 屆
             document.getElementById('q-meta').textContent = `第 ${q.session} 屆`;
             document.getElementById('q-text').textContent = q.text;
             
@@ -191,7 +186,6 @@
         }
 
         function check(idx) {
-            // 練習模式答對就不給改，其餘可改
             if (config.m === 'practice' && userAnswers[curIdx] !== null && userAnswers[curIdx] === currentQuestions[curIdx].answer) return;
             userAnswers[curIdx] = idx;
             renderQuestion();
@@ -243,7 +237,7 @@
 
         function finish() {
             const empty = currentQuestions.length - userAnswers.filter(a => a !== null).length;
-            if(!confirm(empty > 0 ? `還有 ${empty} 題未答，確定交卷？` : '確定交卷評分？')) return;
+            if(!confirm(empty > 0 ? `還有 ${empty} 題未答，確定交卷？` : '確定要交卷評分？')) return;
             const correct = currentQuestions.filter((q, i) => userAnswers[i] === q.answer).length;
             const result = {
                 id: Date.now(), timestamp: new Date().toLocaleString(),
