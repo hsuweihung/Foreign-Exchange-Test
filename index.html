@@ -218,10 +218,16 @@
         </svg>
         查看歷史成長趨勢報告
     </a>
+
+    <a href="saved.html" class="history-btn" style="border-color: var(--gold); color: var(--gold);">
+        <svg width="16" height="16" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        複習清單
+    </a>
 </div>
 
 <script>
-    // 藥丸選單點擊邏輯
     document.querySelectorAll('.pill').forEach(pill => {
         pill.onclick = function() {
             this.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));

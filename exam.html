@@ -51,6 +51,11 @@
         
         .analysis-box { margin-top: 25px; padding: 18px; background: #fcf8ef; border-left: 4px solid var(--gold); font-size: 14px; line-height: 1.6; display: none; }
 
+        /* 書籤按鈕 — 與重答並排的 pill */
+        .bookmark-btn { font-size: 12px; cursor: pointer; border: 1.5px solid #ddd; padding: 5px 12px; border-radius: 20px; transition: 0.15s; font-weight: 700; background: #fff; color: #ccc; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .bookmark-btn:active { transform: scale(0.9); }
+        .bookmark-btn.saved { border-color: var(--gold); color: var(--gold); background: #fffdf5; box-shadow: 0 2px 4px rgba(184,134,11,0.15); }
+
         /* Footer 導覽 */
         footer { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--border); padding: 12px 15px calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -5px 15px rgba(0,0,0,0.03); }
         .footer-inner { max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: center; width: 100%; }
@@ -104,7 +109,10 @@
         <div class="question-card">
             <div class="card-top">
                 <div id="q-meta" class="q-meta">--</div>
-                <div class="redo-btn" onclick="resetCurrent()">↺ 重答</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="redo-btn" onclick="resetCurrent()">↺ 重答</div>
+                    <button class="bookmark-btn" id="bookmark-btn" onclick="toggleBookmark()">☆ 收藏</button>
+                </div>
             </div>
             <div id="q-text" class="q-text">載入題目中...</div>
             <div id="options-grid" class="options-grid"></div>
@@ -130,7 +138,20 @@
         window.onload = function() {
             if (typeof DATA === 'undefined' || !DATA[config.sub]) return window.location.href = 'index.html';
             let pool = [];
-            if (config.s === 'all') {
+
+            if (config.s === 'saved') {
+                // 複習收藏模式：從 saved_practice_queue 讀取題目
+                const queue = JSON.parse(localStorage.getItem('saved_practice_queue') || 'null');
+                if (!queue || !queue.refs || queue.refs.length === 0) return window.location.href = 'saved.html';
+                queue.refs.forEach(ref => {
+                    const yearData = DATA[config.sub][ref.session];
+                    if (yearData) {
+                        const q = yearData.find(q => String(q.id) === String(ref.id));
+                        if (q) pool.push({ ...q, session: ref.session });
+                    }
+                });
+                currentQuestions = pool;
+            } else if (config.s === 'all') {
                 for (let year in DATA[config.sub]) {
                     const items = DATA[config.sub][year].map(q => ({...q, session: year}));
                     pool.push(...items);
@@ -139,9 +160,11 @@
             } else {
                 currentQuestions = (DATA[config.sub][config.s] || []).map(q => ({...q, session: config.s})).sort(() => Math.random() - 0.5);
             }
+
             if (currentQuestions.length === 0) return window.location.href = 'index.html';
             userAnswers = new Array(currentQuestions.length).fill(null);
-            document.getElementById('header-title').textContent = (config.sub==='trade'?'進出口外匯':'國外匯兌');
+            const subLabel = config.sub === 'trade' ? '進出口外匯' : '國外匯兌';
+            document.getElementById('header-title').textContent = config.s === 'saved' ? `★ ${subLabel} 收藏複習` : subLabel;
             renderQuestion();
             updateStatus();
         };
@@ -176,7 +199,9 @@
                 info.style.display = 'none';
             }
             document.getElementById('prev-btn').disabled = (curIdx === 0);
+            document.getElementById('next-btn').disabled = (curIdx === currentQuestions.length - 1);
             document.getElementById('nav-pos-btn').textContent = `${curIdx + 1} / ${currentQuestions.length}`;
+            updateBookmarkBtn();
         }
 
         function check(idx) {
@@ -225,6 +250,44 @@
             document.getElementById('progress-bar').style.width = (answered / currentQuestions.length * 100) + '%';
         }
 
+        // ── 收藏功能 ──────────────────────────────────────────
+        function getSaved() {
+            return JSON.parse(localStorage.getItem('saved_questions') || '{"remittance":[],"trade":[]}');
+        }
+        function saveSaved(obj) {
+            localStorage.setItem('saved_questions', JSON.stringify(obj));
+        }
+        function isCurrentSaved() {
+            const q = currentQuestions[curIdx];
+            const saved = getSaved();
+            const list = saved[config.sub] || [];
+            return list.some(m => String(m.id) === String(q.id) && String(m.session) === String(q.session));
+        }
+        function toggleBookmark() {
+            const q = currentQuestions[curIdx];
+            const saved = getSaved();
+            if (!saved[config.sub]) saved[config.sub] = [];
+            const idx = saved[config.sub].findIndex(m => String(m.id) === String(q.id) && String(m.session) === String(q.session));
+            if (idx === -1) {
+                saved[config.sub].push({ id: q.id, session: q.session });
+            } else {
+                saved[config.sub].splice(idx, 1);
+            }
+            saveSaved(saved);
+            updateBookmarkBtn();
+        }
+        function updateBookmarkBtn() {
+            const btn = document.getElementById('bookmark-btn');
+            if (isCurrentSaved()) {
+                btn.textContent = '★ 收藏';
+                btn.classList.add('saved');
+            } else {
+                btn.textContent = '☆ 收藏';
+                btn.classList.remove('saved');
+            }
+        }
+        // ─────────────────────────────────────────────────────
+
         function goHome() { if(confirm('確定要回首頁嗎？測驗進度將不予儲存。')) window.location.href='index.html'; }
 
 function finish() {
@@ -267,10 +330,12 @@ function finish() {
     localStorage.setItem('last_exam_full', JSON.stringify(resultFull));
     // ----------------------------------------------
 
-    // 存入歷史紀錄
-    let hist = JSON.parse(localStorage.getItem('exam_history') || '[]');
-    hist.unshift({ id: Date.now(), timestamp: new Date().toLocaleString(), ...resultSummary });
-    localStorage.setItem('exam_history', JSON.stringify(hist));
+    // 存入歷史紀錄（收藏複習模式不計入）
+    if (config.s !== 'saved') {
+        let hist = JSON.parse(localStorage.getItem('exam_history') || '[]');
+        hist.unshift({ id: Date.now(), timestamp: new Date().toLocaleString(), ...resultSummary });
+        localStorage.setItem('exam_history', JSON.stringify(hist));
+    }
 
     // 跳轉
     window.location.href = `result.html?score=${finalScore}&correct=${correctCount}&total=${currentQuestions.length}`;

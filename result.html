@@ -51,6 +51,11 @@
         <a href="history.html" class="btn btn-outline">📊 查看歷史紀錄</a>
     </div>
 
+    <div id="wrong-section" style="display:none;">
+        <div class="wrong-title">錯題解析</div>
+        <div id="wrong-list"></div>
+    </div>
+
     <script>
         window.onload = function() {
             const data = JSON.parse(localStorage.getItem('last_result'));

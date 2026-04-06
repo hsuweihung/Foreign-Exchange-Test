@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>收藏複習清單</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+    <style>
+        :root {
+            --ink: #1a1208;
+            --paper: #f5f0e8;
+            --gold: #b8860b;
+            --border: #c8b99a;
+            --red: #8b2020;
+            --green: #1a4a2e;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--paper);
+            margin: 0;
+            padding: calc(16px + env(safe-area-inset-top)) 16px calc(90px + env(safe-area-inset-bottom));
+            font-family: 'Noto Serif TC', serif;
+            color: var(--ink);
+        }
+
+        .container { max-width: 760px; margin: 0 auto; }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .page-title { font-size: 18px; font-weight: bold; margin: 0; }
+
+        .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+        .clear-btn {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 11px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: 0.2s;
+            font-family: 'Noto Serif TC', serif;
+            white-space: nowrap;
+        }
+        .clear-btn:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+
+        .home-btn {
+            text-decoration: none;
+            color: var(--ink);
+            border: 1.5px solid var(--ink);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* Tab */
+        .tab-group {
+            display: flex;
+            background: rgba(0,0,0,0.05);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 6px;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 7px;
+            transition: 0.2s;
+            font-weight: bold;
+            color: #999;
+        }
+
+        .tab.active {
+            background: white;
+            color: var(--ink);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: white;
+            font-size: 10px;
+            font-family: 'DM Mono', monospace;
+            padding: 1px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        /* 統計列 */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-mini {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 8px;
+            text-align: center;
+        }
+
+        .stat-mini span {
+            display: block;
+            font-size: 10px;
+            color: var(--gold);
+            letter-spacing: 0.5px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .stat-mini b {
+            font-size: 26px;
+            font-family: 'DM Mono', monospace;
+            line-height: 1;
+        }
+
+        /* 題目卡片 */
+        .q-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .q-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+
+        .q-card-meta {
+            font-size: 11px;
+            color: var(--gold);
+            font-family: 'DM Mono', monospace;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* 移除按鈕：pill style 同 exam.html 重答按鈕 */
+        .remove-btn {
+            font-size: 12px;
+            cursor: pointer;
+            border: 1.5px solid var(--gold);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            background: #fffdf5;
+            color: var(--gold);
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-family: 'Noto Serif TC', serif;
+            transition: 0.15s;
+        }
+        .remove-btn:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+        .remove-btn:active { transform: scale(0.92); }
+
+        .q-card-text {
+            font-size: 15px;
+            line-height: 1.65;
+            color: var(--ink);
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+
+        .options-list { display: grid; gap: 7px; }
+
+        .opt-item {
+            padding: 10px 13px;
+            border: 1px solid #eee;
+            border-radius: 7px;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            line-height: 1.5;
+            background: #fafafa;
+        }
+
+        .opt-item.correct {
+            background: #eef5f1;
+            border-color: var(--green);
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        .opt-label {
+            font-family: 'DM Mono', monospace;
+            color: var(--gold);
+            margin-right: 10px;
+            font-weight: bold;
+            min-width: 26px;
+            flex-shrink: 0;
+        }
+
+        .opt-item.correct .opt-label { color: var(--green); }
+
+        .analysis-box {
+            margin-top: 12px;
+            padding: 13px 15px;
+            background: #fcf8ef;
+            border-left: 3px solid var(--gold);
+            font-size: 13px;
+            line-height: 1.65;
+            color: #5d4a26;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* 空白態 */
+        #empty-state {
+            display: none;
+            text-align: center;
+            padding: 70px 20px;
+            color: #bbb;
+        }
+        #empty-state .emoji { font-size: 44px; margin-bottom: 14px; }
+        #empty-state p { margin: 4px 0; font-size: 14px; }
+        #empty-state small { font-size: 12px; color: #ccc; }
+
+        /* 底部複習列 */
+        .practice-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.07);
+        }
+
+        .practice-bar-inner { max-width: 760px; margin: 0 auto; }
+
+        .practice-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--ink);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Noto Serif TC', serif;
+            letter-spacing: 2px;
+            transition: 0.2s;
+        }
+        .practice-btn:hover { background: var(--gold); }
+        .practice-btn:active { transform: scale(0.98); }
+
+        @media (max-width: 400px) {
+            .stat-mini span { font-size: 9px; }
+            .stat-mini b { font-size: 20px; }
+            .q-card-text { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h1 class="page-title">★ 收藏複習清單</h1>
+        <div class="header-actions">
+            <button class="clear-btn" onclick="clearCurrentTab()">清除此科目</button>
+            <a href="index.html" class="home-btn">回首頁</a>
+        </div>
+    </header>
+
+    <div class="tab-group">
+        <div class="tab active" id="tab-remittance" onclick="switchTab('remittance')">
+            國外匯兌業務 <span class="tab-badge" id="badge-remittance">0</span>
+        </div>
+        <div class="tab" id="tab-trade" onclick="switchTab('trade')">
+            進出口外匯業務 <span class="tab-badge" id="badge-trade">0</span>
+        </div>
+    </div>
+
+    <div class="stat-row">
+        <div class="stat-mini">
+            <span>國外匯兌業務</span>
+            <b id="count-remittance">0</b>
+        </div>
+        <div class="stat-mini">
+            <span>進出口外匯業務</span>
+            <b id="count-trade">0</b>
+        </div>
+        <div class="stat-mini">
+            <span>合計</span>
+            <b id="count-total">0</b>
+        </div>
+    </div>
+
+    <div id="question-list"></div>
+
+    <div id="empty-state">
+        <div class="emoji">☆</div>
+        <p>此科目尚無收藏題目</p>
+        <small>在作答時點擊 ★ 加入收藏</small>
+    </div>
+
+</div>
+
+<div class="practice-bar" id="practice-bar">
+    <div class="practice-bar-inner">
+        <button class="practice-btn" onclick="startPractice()">📖 開始複習收藏題目</button>
+    </div>
+</div>
+
+<script>
+    // LABELS 從 data.js 載入，此處不重複宣告
+    let currentTab = 'remittance';
+    let allQuestions = {};
+
+    function buildIndex() {
+        if (typeof DATA === 'undefined') return;
+        for (const sub in DATA) {
+            for (const session in DATA[sub]) {
+                DATA[sub][session].forEach(q => {
+                    allQuestions[`${sub}_${session}_${q.id}`] = { ...q, session, sub };
+                });
+            }
+        }
+    }
+
+    function getSaved() {
+        return JSON.parse(localStorage.getItem('saved_questions') || '{"remittance":[],"trade":[]}');
+    }
+
+    function saveSaved(obj) {
+        localStorage.setItem('saved_questions', JSON.stringify(obj));
+    }
+
+    function updateCounts() {
+        const saved = getSaved();
+        const r = (saved.remittance || []).length;
+        const t = (saved.trade || []).length;
+        document.getElementById('count-remittance').textContent = r;
+        document.getElementById('count-trade').textContent = t;
+        document.getElementById('count-total').textContent = r + t;
+        document.getElementById('badge-remittance').textContent = r;
+        document.getElementById('badge-trade').textContent = t;
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.getElementById('tab-remittance').classList.toggle('active', tab === 'remittance');
+        document.getElementById('tab-trade').classList.toggle('active', tab === 'trade');
+        renderList();
+    }
+
+    function renderList() {
+        const saved = getSaved();
+        const list = saved[currentTab] || [];
+        const container = document.getElementById('question-list');
+        const empty = document.getElementById('empty-state');
+        const bar = document.getElementById('practice-bar');
+
+        container.innerHTML = '';
+
+        if (list.length === 0) {
+            empty.style.display = 'block';
+            bar.style.display = 'none';
+            return;
+        }
+
+        empty.style.display = 'none';
+        bar.style.display = 'block';
+
+        list.forEach(ref => {
+            const key = `${currentTab}_${ref.session}_${ref.id}`;
+            const q = allQuestions[key];
+            if (!q) return;
+
+            const card = document.createElement('div');
+            card.className = 'q-card';
+
+            const optionsHTML = q.options.map((opt, i) => `
+                <div class="opt-item${i === q.answer ? ' correct' : ''}">
+                    <span class="opt-label">${LABELS[i]}</span>
+                    <span>${opt}</span>
+                </div>
+            `).join('');
+
+            const analysisHTML = q.analysis && q.analysis.trim()
+                ? `<div class="analysis-box"><b style="color:var(--gold)">💡 解析：</b><br>${q.analysis}</div>`
+                : '';
+
+            card.innerHTML = `
+                <div class="q-card-header">
+                    <div class="q-card-meta">第 ${q.session} 屆 · 題 ${q.id}</div>
+                    <button class="remove-btn" onclick="removeItem('${currentTab}','${ref.session}','${ref.id}')">★ 移除</button>
+                </div>
+                <div class="q-card-text">${q.text}</div>
+                <div class="options-list">${optionsHTML}</div>
+                ${analysisHTML}
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function removeItem(sub, session, id) {
+        const saved = getSaved();
+        saved[sub] = (saved[sub] || []).filter(m =>
+            !(String(m.id) === String(id) && String(m.session) === String(session))
+        );
+        saveSaved(saved);
+        updateCounts();
+        renderList();
+    }
+
+    function clearCurrentTab() {
+        const name = currentTab === 'remittance' ? '國外匯兌業務' : '進出口外匯業務';
+        if (!confirm(`確定要清除「${name}」的所有收藏嗎？`)) return;
+        const saved = getSaved();
+        saved[currentTab] = [];
+        saveSaved(saved);
+        updateCounts();
+        renderList();
+    }
+
+    function startPractice() {
+        const saved = getSaved();
+        const refs = saved[currentTab] || [];
+        if (!refs.length) return;
+        localStorage.setItem('saved_practice_queue', JSON.stringify({ sub: currentTab, refs }));
+        window.location.href = `exam.html?s=saved&sub=${currentTab}&m=practice`;
+    }
+
+    window.onload = function() {
+        buildIndex();
+        updateCounts();
+        renderList();
+    };
+</script>
+</body>
+</html>
