@@ -281,7 +281,7 @@
             // 換題時關閉 drawer 並重置對話
             closeGemini();
             geminiHistory = [];
-            geminiHistory._lastQIdx = curIdx;
+            geminiOpenedForIdx = -1;
         }
 
         function check(idx) {
@@ -428,12 +428,14 @@
         const WORKER_URL = 'https://emini-proxy.19970923william.workers.dev';
         let geminiHistory = [];
         let geminiLoading = false;
+        let geminiOpenedForIdx = -1; // 記錄已經自動問過的題目 index
 
         function openGemini() {
             document.getElementById('gemini-drawer').classList.add('open');
-            if (geminiHistory._lastQIdx !== curIdx) {
+            // 每次切換到新題目才自動觸發，同一題重開不重複問
+            if (geminiOpenedForIdx !== curIdx) {
+                geminiOpenedForIdx = curIdx;
                 geminiHistory = [];
-                geminiHistory._lastQIdx = curIdx;
                 document.getElementById('chat-body').innerHTML = '';
                 autoAskQuestion();
             }
