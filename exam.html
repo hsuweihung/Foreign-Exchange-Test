@@ -11,17 +11,13 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--paper); margin: 0; font-family: 'Noto Serif TC', serif; padding-bottom: calc(110px + env(safe-area-inset-bottom)); }
         
-        /* Header：修正擠壓問題 */
         header { background: var(--ink); color: white; position: sticky; top: 0; z-index: 100; padding: calc(10px + env(safe-area-inset-top)) 15px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .header-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 85px 1fr 85px; align-items: center; }
-        
         .header-left { display: flex; align-items: center; }
         .home-icon { cursor: pointer; color: var(--gold); text-decoration: none; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-        
-        .header-center { text-align: center; min-width: 0; } /* min-width 0 防止 flex/grid 溢出 */
+        .header-center { text-align: center; min-width: 0; }
         .status-val { font-family: 'DM Mono', monospace; font-size: 14px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .status-progress { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gold); margin-top: 1px; font-weight: 500; }
-
         .header-right { text-align: right; }
         .finish-btn { background: var(--gold); color: white; border: none; padding: 7px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; white-space: nowrap; }
         .finish-btn:active { background: #d4a017; transform: scale(0.95); }
@@ -29,13 +25,11 @@
         .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.1); z-index: 101; }
         #progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
 
-        /* 題目卡片 */
         main { max-width: 800px; margin: 15px auto; padding: 0 15px; }
         .question-card { background: white; padding: 25px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 380px; border-radius: 8px; position: relative; }
         .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .q-meta { font-family: 'Noto Serif TC', serif; color: var(--gold); font-size: 14px; font-weight: 700; }
         
-        /* ↺ 重答按鈕優化 */
         .redo-btn { font-size: 12px; cursor: pointer; color: var(--gold); border: 1.5px solid var(--gold); padding: 5px 14px; border-radius: 20px; transition: 0.1s; font-weight: 700; background: #fff; box-shadow: 0 2px 4px rgba(184,134,11,0.1); }
         .redo-btn:active { transform: scale(0.9); background: #fffaf0; }
         
@@ -44,19 +38,46 @@
         .option { padding: 15px 18px; border: 1px solid #eee; cursor: pointer; transition: 0.1s; display: flex; align-items: flex-start; border-radius: 8px; line-height: 1.5; font-size: 16px; background: #fff; }
         .option:active { transform: scale(0.98); background: #f9f9f9; }
         .option-label { font-family: 'DM Mono', monospace; margin-right: 12px; color: var(--gold); font-weight: bold; }
-        
         .option.correct { background: #eef5f1 !important; border-color: var(--green) !important; color: var(--green); font-weight: bold; }
         .option.wrong { background: #fdf2f2 !important; border-color: var(--red) !important; color: var(--red); }
         .option.selected { border-color: var(--ink); background: #f5f5f5; border-width: 2px; }
-        
         .analysis-box { margin-top: 25px; padding: 18px; background: #fcf8ef; border-left: 4px solid var(--gold); font-size: 14px; line-height: 1.6; display: none; }
 
-        /* 書籤按鈕 — 與重答並排的 pill */
+        /* 書籤按鈕 */
         .bookmark-btn { font-size: 12px; cursor: pointer; border: 1.5px solid #ddd; padding: 5px 12px; border-radius: 20px; transition: 0.15s; font-weight: 700; background: #fff; color: #ccc; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .bookmark-btn:active { transform: scale(0.9); }
         .bookmark-btn.saved { border-color: var(--gold); color: var(--gold); background: #fffdf5; box-shadow: 0 2px 4px rgba(184,134,11,0.15); }
 
-        /* Footer 導覽 */
+        /* 問 Gemini 按鈕 */
+        .ask-gemini-btn { display: none; font-size: 12px; cursor: pointer; border: 1.5px solid #4285f4; padding: 5px 12px; border-radius: 20px; transition: 0.15s; font-weight: 700; background: #fff; color: #4285f4; box-shadow: 0 2px 4px rgba(66,133,244,0.1); }
+        .ask-gemini-btn:hover { background: #f0f4ff; }
+        .ask-gemini-btn:active { transform: scale(0.9); }
+
+        /* Gemini Drawer */
+        #gemini-drawer { position: fixed; bottom: 0; left: 0; width: 100%; height: 0; background: white; border-top: 2px solid #4285f4; border-radius: 16px 16px 0 0; z-index: 500; transition: height 0.35s cubic-bezier(0.4,0,0.2,1); overflow: hidden; box-shadow: 0 -8px 30px rgba(0,0,0,0.12); }
+        #gemini-drawer.open { height: 65vh; }
+        .drawer-inner { display: flex; flex-direction: column; height: 100%; }
+        .drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 10px; border-bottom: 1px solid #eee; flex-shrink: 0; }
+        .drawer-title { font-size: 14px; font-weight: bold; color: #4285f4; display: flex; align-items: center; gap: 6px; }
+        .drawer-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #999; padding: 0 4px; line-height: 1; }
+        .drawer-close:hover { color: var(--ink); }
+        .chat-body { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+        .msg-user { align-self: flex-end; background: #4285f4; color: white; padding: 10px 14px; border-radius: 12px 12px 2px 12px; font-size: 14px; max-width: 85%; line-height: 1.5; }
+        .msg-gemini { align-self: flex-start; background: #f8f8f8; color: var(--ink); padding: 12px 15px; border-radius: 2px 12px 12px 12px; font-size: 14px; max-width: 92%; line-height: 1.7; border: 1px solid #eee; white-space: pre-wrap; }
+        .msg-loading { color: #4285f4; font-size: 13px; display: flex; align-items: center; gap: 6px; padding: 8px 0; }
+        .dot-bounce { display: inline-flex; gap: 4px; }
+        .dot-bounce span { width: 6px; height: 6px; background: #4285f4; border-radius: 50%; animation: bounce 1.2s infinite; }
+        .dot-bounce span:nth-child(2) { animation-delay: 0.2s; }
+        .dot-bounce span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+        .chat-input-row { display: flex; gap: 8px; padding: 10px 18px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid #eee; flex-shrink: 0; }
+        .chat-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 14px; font-family: 'Noto Serif TC', serif; outline: none; }
+        .chat-input:focus { border-color: #4285f4; }
+        .chat-send { padding: 10px 16px; background: #4285f4; color: white; border: none; border-radius: 20px; font-size: 14px; cursor: pointer; font-weight: bold; white-space: nowrap; }
+        .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
+        .chat-send:not(:disabled):hover { background: #3367d6; }
+
+        /* Footer */
         footer { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--border); padding: 12px 15px calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -5px 15px rgba(0,0,0,0.03); }
         .footer-inner { max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: center; width: 100%; }
         .nav-group { display: flex; align-items: center; gap: 8px; width: 100%; }
@@ -112,6 +133,7 @@
                 <div style="display:flex; align-items:center; gap:8px;">
                     <div class="redo-btn" onclick="resetCurrent()">↺ 重答</div>
                     <button class="bookmark-btn" id="bookmark-btn" onclick="toggleBookmark()">☆ 收藏</button>
+                    <button class="ask-gemini-btn" id="ask-gemini-btn" onclick="openGemini()">💬 問 Gemini</button>
                 </div>
             </div>
             <div id="q-text" class="q-text">載入題目中...</div>
@@ -130,17 +152,67 @@
         </div>
     </footer>
 
+    <!-- Gemini Drawer -->
+    <div id="gemini-drawer">
+        <div class="drawer-inner">
+            <div class="drawer-header">
+                <div class="drawer-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L9.5 9.5L2 12L9.5 14.5L12 22L14.5 14.5L22 12L14.5 9.5L12 2Z" fill="#4285f4"/></svg>
+                    Gemini 解題助手
+                </div>
+                <button class="drawer-close" onclick="closeGemini()">✕</button>
+            </div>
+            <div class="chat-body" id="chat-body"></div>
+            <div class="chat-input-row">
+                <input class="chat-input" id="chat-input" placeholder="繼續追問…" onkeydown="if(event.key==='Enter')sendChat()" />
+                <button class="chat-send" id="chat-send" onclick="sendChat()">送出</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const params = new URLSearchParams(window.location.search);
         const config = { s: params.get('s'), sub: params.get('sub'), m: params.get('m') };
         let currentQuestions = [], userAnswers = [], curIdx = 0;
 
+        // ── Session ──────────────────────────────────────────
+        const SESSION_KEY = `exam_session_${config.s}_${config.sub}_${config.m}`;
+
+        function saveSession() {
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+                questions: currentQuestions,
+                answers: userAnswers,
+                idx: curIdx
+            }));
+        }
+
+        function loadSession() {
+            try {
+                const raw = sessionStorage.getItem(SESSION_KEY);
+                if (!raw) return false;
+                const saved = JSON.parse(raw);
+                if (!saved.questions || !saved.questions.length) return false;
+                currentQuestions = saved.questions;
+                userAnswers = saved.answers;
+                curIdx = saved.idx || 0;
+                return true;
+            } catch(e) { return false; }
+        }
+        // ─────────────────────────────────────────────────────
+
         window.onload = function() {
             if (typeof DATA === 'undefined' || !DATA[config.sub]) return window.location.href = 'index.html';
-            let pool = [];
 
+            if (loadSession()) {
+                const subLabel = config.sub === 'trade' ? '進出口外匯' : '國外匯兌';
+                document.getElementById('header-title').textContent = config.s === 'saved' ? `★ ${subLabel} 收藏複習` : subLabel;
+                renderQuestion();
+                updateStatus();
+                return;
+            }
+
+            let pool = [];
             if (config.s === 'saved') {
-                // 複習收藏模式：從 saved_practice_queue 讀取題目
                 const queue = JSON.parse(localStorage.getItem('saved_practice_queue') || 'null');
                 if (!queue || !queue.refs || queue.refs.length === 0) return window.location.href = 'saved.html';
                 queue.refs.forEach(ref => {
@@ -165,6 +237,7 @@
             userAnswers = new Array(currentQuestions.length).fill(null);
             const subLabel = config.sub === 'trade' ? '進出口外匯' : '國外匯兌';
             document.getElementById('header-title').textContent = config.s === 'saved' ? `★ ${subLabel} 收藏複習` : subLabel;
+            saveSession();
             renderQuestion();
             updateStatus();
         };
@@ -202,11 +275,19 @@
             document.getElementById('next-btn').disabled = (curIdx === currentQuestions.length - 1);
             document.getElementById('nav-pos-btn').textContent = `${curIdx + 1} / ${currentQuestions.length}`;
             updateBookmarkBtn();
+
+            // 問 Gemini：永遠顯示
+            document.getElementById('ask-gemini-btn').style.display = 'inline-block';
+            // 換題時關閉 drawer 並重置對話
+            closeGemini();
+            geminiHistory = [];
+            geminiHistory._lastQIdx = curIdx;
         }
 
         function check(idx) {
             if (config.m === 'practice' && userAnswers[curIdx] !== null && userAnswers[curIdx] === currentQuestions[curIdx].answer) return;
             userAnswers[curIdx] = idx;
+            saveSession();
             renderQuestion();
             updateStatus();
         }
@@ -214,16 +295,17 @@
         function resetCurrent() {
             if (userAnswers[curIdx] === null) return;
             userAnswers[curIdx] = null;
+            saveSession();
             renderQuestion();
             updateStatus();
         }
 
         function nextQuestion() {
-            if (curIdx < currentQuestions.length - 1) { curIdx++; renderQuestion(); window.scrollTo(0, 0); }
+            if (curIdx < currentQuestions.length - 1) { curIdx++; saveSession(); renderQuestion(); window.scrollTo(0, 0); }
         }
 
         function prevQuestion() {
-            if (curIdx > 0) { curIdx--; renderQuestion(); window.scrollTo(0, 0); }
+            if (curIdx > 0) { curIdx--; saveSession(); renderQuestion(); window.scrollTo(0, 0); }
         }
 
         function toggleMap() {
@@ -239,7 +321,7 @@
                 const dot = document.createElement('div');
                 dot.className = 'nav-dot' + (userAnswers[i]!==null?' answered':'') + (i===curIdx?' current':'');
                 dot.textContent = i + 1;
-                dot.onclick = () => { curIdx = i; renderQuestion(); toggleMap(); };
+                dot.onclick = () => { curIdx = i; saveSession(); renderQuestion(); toggleMap(); };
                 grid.appendChild(dot);
             });
         }
@@ -288,58 +370,169 @@
         }
         // ─────────────────────────────────────────────────────
 
-        function goHome() { if(confirm('確定要回首頁嗎？測驗進度將不予儲存。')) window.location.href='index.html'; }
-
-function finish() {
-    const empty = currentQuestions.length - userAnswers.filter(a => a !== null).length;
-    if(!confirm(empty > 0 ? `還有 ${empty} 題未答，確定交卷？` : '確定評分？')) return;
-    
-    let mistakes = JSON.parse(localStorage.getItem('mistake_bank') || '{}');
-    const sub = config.sub; 
-    if (!mistakes[sub]) mistakes[sub] = [];
-
-    let correctCount = 0;
-    currentQuestions.forEach((q, i) => {
-        if (userAnswers[i] === q.answer) {
-            correctCount++;
-        } else if (userAnswers[i] !== null) {
-            // 存入錯題本 (Phase 1 邏輯)
-            if (!mistakes[sub].some(m => String(m.id) === String(q.id) && m.session === q.session)) {
-                mistakes[sub].push({ id: q.id, session: q.session });
+        function goHome() {
+            if (confirm('確定要回首頁嗎？測驗進度將不予儲存。')) {
+                sessionStorage.removeItem(SESSION_KEY);
+                window.location.href = 'index.html';
             }
         }
-    });
-    localStorage.setItem('mistake_bank', JSON.stringify(mistakes));
 
-    const scorePerQ = config.sub === 'trade' ? 1.25 : 2;
-    const finalScore = Math.round(correctCount * scorePerQ * 10) / 10;
+        function finish() {
+            const empty = currentQuestions.length - userAnswers.filter(a => a !== null).length;
+            if (!confirm(empty > 0 ? `還有 ${empty} 題未答，確定交卷？` : '確定評分？')) return;
 
-    // --- 【修復關鍵】儲存 result.html 需要的暫存資料 ---
-    const resultSummary = {
-        correct: correctCount,
-        total: currentQuestions.length,
-        score: finalScore,
-        subject: config.sub === 'trade' ? '進出口外匯' : '國外匯兌'
-    };
-    const resultFull = {
-        questions: currentQuestions.map(q => ({...q, _s: q.session})), // 加上 _s 避免與 session 變數混淆
-        answers: userAnswers
-    };
-    
-    localStorage.setItem('last_result', JSON.stringify(resultSummary));
-    localStorage.setItem('last_exam_full', JSON.stringify(resultFull));
-    // ----------------------------------------------
+            let mistakes = JSON.parse(localStorage.getItem('mistake_bank') || '{}');
+            const sub = config.sub;
+            if (!mistakes[sub]) mistakes[sub] = [];
 
-    // 存入歷史紀錄（收藏複習模式不計入）
-    if (config.s !== 'saved') {
-        let hist = JSON.parse(localStorage.getItem('exam_history') || '[]');
-        hist.unshift({ id: Date.now(), timestamp: new Date().toLocaleString(), ...resultSummary });
-        localStorage.setItem('exam_history', JSON.stringify(hist));
-    }
+            let correctCount = 0;
+            currentQuestions.forEach((q, i) => {
+                if (userAnswers[i] === q.answer) {
+                    correctCount++;
+                } else if (userAnswers[i] !== null) {
+                    if (!mistakes[sub].some(m => String(m.id) === String(q.id) && m.session === q.session)) {
+                        mistakes[sub].push({ id: q.id, session: q.session });
+                    }
+                }
+            });
+            localStorage.setItem('mistake_bank', JSON.stringify(mistakes));
 
-    // 跳轉
-    window.location.href = `result.html?score=${finalScore}&correct=${correctCount}&total=${currentQuestions.length}`;
-}
+            const scorePerQ = config.sub === 'trade' ? 1.25 : 2;
+            const finalScore = Math.round(correctCount * scorePerQ * 10) / 10;
+
+            const resultSummary = {
+                correct: correctCount,
+                total: currentQuestions.length,
+                score: finalScore,
+                subject: config.sub === 'trade' ? '進出口外匯' : '國外匯兌'
+            };
+            const resultFull = {
+                questions: currentQuestions.map(q => ({...q, _s: q.session})),
+                answers: userAnswers
+            };
+
+            localStorage.setItem('last_result', JSON.stringify(resultSummary));
+            localStorage.setItem('last_exam_full', JSON.stringify(resultFull));
+
+            if (config.s !== 'saved') {
+                let hist = JSON.parse(localStorage.getItem('exam_history') || '[]');
+                hist.unshift({ id: Date.now(), timestamp: new Date().toLocaleString(), ...resultSummary });
+                localStorage.setItem('exam_history', JSON.stringify(hist));
+            }
+
+            sessionStorage.removeItem(SESSION_KEY);
+            window.location.href = `result.html?score=${finalScore}&correct=${correctCount}&total=${currentQuestions.length}`;
+        }
+
+        // ── Gemini 功能 ────────────────────────────────────────
+        const WORKER_URL = 'https://emini-proxy.19970923william.workers.dev';
+        let geminiHistory = [];
+        let geminiLoading = false;
+
+        function openGemini() {
+            document.getElementById('gemini-drawer').classList.add('open');
+            if (geminiHistory._lastQIdx !== curIdx) {
+                geminiHistory = [];
+                geminiHistory._lastQIdx = curIdx;
+                document.getElementById('chat-body').innerHTML = '';
+                autoAskQuestion();
+            }
+        }
+
+        function closeGemini() {
+            document.getElementById('gemini-drawer').classList.remove('open');
+        }
+
+        function buildQuestionPrompt() {
+            const q = currentQuestions[curIdx];
+            const optText = q.options.map((o, i) => `${LABELS[i]} ${o}`).join('\n');
+            if (config.m === 'exam') {
+                // 考試模式：不透露答案，只解說考點
+                return `以下是一道台灣初階外匯人員考試題目，請用繁體中文解說這題的考點與各選項的意思，但不要直接說出正確答案：\n\n【題目】\n${q.text}\n\n【選項】\n${optText}`;
+            }
+            return `以下是一道台灣初階外匯人員考試題目，請用繁體中文詳細解說為什麼正確答案是「${q.options[q.answer]}」，並說明各選項的差異：\n\n【題目】\n${q.text}\n\n【選項】\n${optText}\n\n【正確答案】${LABELS[q.answer]} ${q.options[q.answer]}`;
+        }
+
+        async function autoAskQuestion() {
+            appendMsg('user', '請解說這題的正確答案與各選項差異');
+            await callGemini(buildQuestionPrompt());
+        }
+
+        async function sendChat() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text || geminiLoading) return;
+            input.value = '';
+            appendMsg('user', text);
+            await callGemini(text);
+        }
+
+        function appendMsg(role, text) {
+            const body = document.getElementById('chat-body');
+            const div = document.createElement('div');
+            div.className = role === 'user' ? 'msg-user' : 'msg-gemini';
+            div.textContent = text;
+            body.appendChild(div);
+            body.scrollTop = body.scrollHeight;
+            return div;
+        }
+
+        function appendLoading() {
+            const body = document.getElementById('chat-body');
+            const div = document.createElement('div');
+            div.className = 'msg-loading';
+            div.innerHTML = `<div class="dot-bounce"><span></span><span></span><span></span></div> Gemini 思考中`;
+            body.appendChild(div);
+            body.scrollTop = body.scrollHeight;
+            return div;
+        }
+
+        async function callGemini(userText) {
+            geminiLoading = true;
+            document.getElementById('chat-send').disabled = true;
+            geminiHistory.push({ role: 'user', parts: [{ text: userText }] });
+            const loader = appendLoading();
+            try {
+                const res = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: geminiHistory.filter(h => h.role && h.parts),
+                        generationConfig: { temperature: 0.4, maxOutputTokens: 1024 }
+                    })
+                });
+                const data = await res.json();
+                loader.remove();
+                if (data.error) {
+                    appendMsg('gemini', `⚠️ 錯誤：${data.error.message}`);
+                    geminiHistory.pop();
+                } else {
+                    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '（無回應）';
+                    geminiHistory.push({ role: 'model', parts: [{ text: reply }] });
+                    typewriterMsg(reply);
+                }
+            } catch (e) {
+                loader.remove();
+                appendMsg('gemini', `⚠️ 網路錯誤：${e.message}`);
+                geminiHistory.pop();
+            }
+            geminiLoading = false;
+            document.getElementById('chat-send').disabled = false;
+        }
+
+        function typewriterMsg(text) {
+            const body = document.getElementById('chat-body');
+            const div = document.createElement('div');
+            div.className = 'msg-gemini';
+            body.appendChild(div);
+            let i = 0;
+            const interval = setInterval(() => {
+                div.textContent = text.slice(0, i += 3);
+                body.scrollTop = body.scrollHeight;
+                if (i >= text.length) { div.textContent = text; clearInterval(interval); }
+            }, 16);
+        }
+        // ──────────────────────────────────────────────────────
     </script>
 </body>
 </html>
