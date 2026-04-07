@@ -404,12 +404,8 @@
                 correct: correctCount,
                 total: currentQuestions.length,
                 score: finalScore,
-<<<<<<< Updated upstream
-                subject: config.sub === 'trade' ? '進出口外匯' : '國外匯兌'
-=======
                 subject: config.sub === 'trade' ? '進出口外匯' : '國外匯兌',
                 session: config.s
->>>>>>> Stashed changes
             };
             const resultFull = {
                 questions: currentQuestions.map(q => ({...q, _s: q.session})),
