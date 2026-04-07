@@ -4,6 +4,13 @@ let geminiHistory = [];
 let geminiLoading = false;
 let geminiCurrentKey = null;
 
+const compactReply = (reply, options) => {
+    if (typeof FXCommon.compactReply === 'function') {
+        return FXCommon.compactReply(reply, options);
+    }
+    return reply;
+};
+
 function buildIndex() {
     if (typeof DATA === 'undefined') return;
 
@@ -167,7 +174,7 @@ async function callGemini(userText) {
         userText,
         temperature: 0.2,
         maxOutputTokens: 280,
-        transformReply: (reply) => FXCommon.compactReply(reply, { maxChars: 180, maxLines: 5 }),
+        transformReply: (reply) => compactReply(reply, { maxChars: 180, maxLines: 5 }),
         onReply: (reply) => typewriterMsg(reply),
         onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
         onFinally: () => {

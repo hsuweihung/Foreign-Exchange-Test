@@ -107,7 +107,9 @@ async function fetchRecommendation(full) {
         }
 
         const rawReply = data.candidates?.[0]?.content?.parts?.[0]?.text || FXConstants.gemini.noReply;
-        const reply = FXCommon.compactReply(rawReply, { maxChars: 220, maxLines: 5 });
+        const reply = typeof FXCommon.compactReply === 'function'
+            ? FXCommon.compactReply(rawReply, { maxChars: 220, maxLines: 5 })
+            : rawReply;
         body.textContent = '';
 
         let i = 0;

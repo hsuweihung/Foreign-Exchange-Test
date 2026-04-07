@@ -22,18 +22,17 @@
     async function callGemini(userText) {
         state.geminiLoading = true;
 
-    await FXCommon.requestGemini({
-        bodyEl: document.getElementById('chat-body'),
-        sendBtn: document.getElementById('chat-send'),
-        inputEl: document.getElementById('chat-input'),
-        history: state.geminiHistory,
-        userText,
-        temperature: 0.2,
-        maxOutputTokens: 260,
-        transformReply: (reply) => FXCommon.compactReply(reply, { maxChars: 160, maxLines: 4 }),
-        onReply: (reply) => typewriterMsg(reply),
-        onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
-        onFinally: () => {
+        await FXCommon.requestGemini({
+            bodyEl: document.getElementById('chat-body'),
+            sendBtn: document.getElementById('chat-send'),
+            inputEl: document.getElementById('chat-input'),
+            history: state.geminiHistory,
+            userText,
+            temperature: 0.25,
+            maxOutputTokens: 520,
+            onReply: (reply) => typewriterMsg(reply),
+            onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
+            onFinally: () => {
                 state.geminiLoading = false;
             }
         });
@@ -53,7 +52,8 @@
             questionText: question.text,
             options: question.options,
             answerIndex: question.answer,
-            mode: config.m
+            mode: config.m,
+            detailLevel: 'full'
         });
 
         callGemini(prompt);

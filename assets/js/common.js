@@ -79,11 +79,21 @@
         return compact || FXConstants.gemini.noReply;
     },
 
-    buildQuestionPrompt({ questionText, options, answerIndex, mode }) {
+    buildQuestionPrompt({ questionText, options, answerIndex, mode, detailLevel = 'summary' }) {
         const labels = FXConstants.getOptionLabels();
         const optionText = options.map((option, index) => `${labels[index]} ${option}`).join('\n');
 
         if (mode === 'exam') {
+            if (detailLevel === 'full') {
+                return [
+                    '你是外匯考試教練。請用繁體中文說明解題方向、判斷依據與容易混淆的地方。',
+                    '不要直接只丟結論，請像在帶學生一樣說明，但篇幅控制在重點範圍內。',
+                    '可以分成 3 段：判斷重點、容易誤判處、作答提醒。',
+                    '不要直接公布正確答案代號。',
+                    `題目：${questionText}`,
+                    `選項：\n${optionText}`
+                ].join('\n\n');
+            }
             return [
                 '你是外匯考試教練。請用繁體中文回答，而且只給精簡摘要。',
                 '格式固定為 3 點：',
@@ -93,6 +103,17 @@
                 '每點 1 句，不要超過 20 字，不要直接公布正確答案，不要寫長篇解析。',
                 `題目：${questionText}`,
                 `選項：\n${optionText}`
+            ].join('\n\n');
+        }
+
+        if (detailLevel === 'full') {
+            return [
+                '你是外匯考試教練。請用繁體中文說明正確答案、判斷依據與容易混淆的地方。',
+                '請以教學口吻回答，但避免冗長鋪陳；重點要完整、可讀。',
+                '建議分成 3 段：正確觀念、為什麼容易錯、實戰判斷方式。',
+                `題目：${questionText}`,
+                `選項：\n${optionText}`,
+                `正確答案：${labels[answerIndex]} ${options[answerIndex]}`
             ].join('\n\n');
         }
 
