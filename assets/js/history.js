@@ -176,6 +176,7 @@ async function callGemini(userText) {
         userText,
         temperature: 0.3,
         maxOutputTokens: 420,
+        transformReply: (reply) => FXCommon.compactReply(reply, { maxChars: 240, maxLines: 6 }),
         onReply: (reply) => typewriterMsg(reply),
         onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
         onFinally: () => {

@@ -54,6 +54,31 @@
         });
     },
 
+    compactReply(text, { maxChars = 220, maxLines = 6 } = {}) {
+        if (!text) return FXConstants.gemini.noReply;
+
+        const normalized = text
+            .replace(/\r/g, '')
+            .replace(/#{1,6}\s*/g, '')
+            .replace(/\*\*/g, '')
+            .replace(/^\s*[-*]\s+/gm, '')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+
+        const lines = normalized
+            .split('\n')
+            .map((line) => line.trim())
+            .filter(Boolean)
+            .slice(0, maxLines);
+
+        let compact = lines.join('\n');
+        if (compact.length > maxChars) {
+            compact = `${compact.slice(0, maxChars).trim()}...`;
+        }
+
+        return compact || FXConstants.gemini.noReply;
+    },
+
     buildQuestionPrompt({ questionText, options, answerIndex, mode }) {
         const labels = FXConstants.getOptionLabels();
         const optionText = options.map((option, index) => `${labels[index]} ${option}`).join('\n');
@@ -107,6 +132,7 @@
         onLoadingText = FXConstants.gemini.loading,
         temperature = 0.4,
         maxOutputTokens = 2048,
+        transformReply,
         onReply,
         onError,
         onFinally
@@ -136,7 +162,8 @@
                 return;
             }
 
-            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || FXConstants.gemini.noReply;
+            const rawReply = data.candidates?.[0]?.content?.parts?.[0]?.text || FXConstants.gemini.noReply;
+            const reply = transformReply ? transformReply(rawReply) : rawReply;
             history.push({ role: 'model', parts: [{ text: reply }] });
             onReply?.(reply);
         } catch (error) {

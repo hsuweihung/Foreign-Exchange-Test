@@ -30,6 +30,7 @@
         userText,
         temperature: 0.2,
         maxOutputTokens: 260,
+        transformReply: (reply) => FXCommon.compactReply(reply, { maxChars: 160, maxLines: 4 }),
         onReply: (reply) => typewriterMsg(reply),
         onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
         onFinally: () => {
