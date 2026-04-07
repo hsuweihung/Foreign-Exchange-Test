@@ -1,0 +1,42 @@
+        body { background: var(--paper); padding: calc(20px + env(safe-area-inset-top)) 20px calc(40px + env(safe-area-inset-bottom)); font-family: 'Noto Serif TC', serif; color: var(--ink); }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .tab-group { margin-bottom: 20px; }
+        .stat-card { background: white; padding: 25px; border-radius: 12px; border: 1px solid var(--border); text-align: center; margin-bottom: 20px; }
+        .stat-label { font-size: 11px; color: var(--gold); letter-spacing: 2px; margin-bottom: 8px; display: block; font-weight: bold; }
+        .stat-value { font-size: 42px; font-weight: bold; font-family: 'DM Mono'; line-height: 1; }
+        .chart-container { background: white; padding: 20px 10px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px; height: 300px; position: relative; }
+        .analyze-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; margin-bottom: 16px; background: white; color: var(--gemini-blue); border: 1.5px solid var(--gemini-blue); border-radius: 8px; font-size: 13px; font-weight: bold; font-family: 'Noto Serif TC', serif; transition: 0.2s; }
+        .analyze-btn:hover { background: #f0f4ff; transform: translateY(-1px); }
+        .table-wrap { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #fafafa; padding: 12px 15px; text-align: left; font-size: 12px; color: var(--gold); border-bottom: 1px solid #eee; }
+        td { padding: 12px 15px; border-bottom: 1px solid #f8f8f8; font-size: 14px; }
+        #empty-state { text-align: center; padding: 100px 20px; color: #bbb; }
+        #gemini-drawer.open { height: 75vh; }
+    
+
+.history-mode-cell {
+    font-size: 12px;
+    color: #888;
+}
+
+.history-score-cell {
+    font-family: 'DM Mono', monospace;
+    font-weight: bold;
+}
+
+.history-pass {
+    color: var(--green);
+}
+
+.history-fail {
+    color: var(--red);
+}
+
+.history-empty-row {
+    text-align: center;
+    color: #ccc;
+    padding: 20px;
+}

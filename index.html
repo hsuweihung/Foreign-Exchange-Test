@@ -1,188 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>初階外匯考古題練習站</title>
+    <title>初階外匯考古題練習網站</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --ink: #1a1208;
-            --paper: #f5f0e8;
-            --gold: #b8860b;
-            --border: #c8b99a;
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
-        }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background: var(--paper);
-            color: var(--ink);
-            font-family: 'Noto Serif TC', serif;
-            margin: 0;
-            padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-image: radial-gradient(circle at 10% 20%, rgba(184,134,11,0.05) 0%, transparent 40%);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-            animation: slideUp 0.8s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(32px, 8vw, 42px);
-            margin: 0;
-        }
-
-        .sub {
-            font-size: 0.9rem;
-            color: #6b5a3e;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 40px;
-        }
-
-        .selection-box {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            padding: 24px;
-            border: 1px solid var(--border);
-            margin-bottom: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-        }
-
-        .label {
-            font-size: 11px;
-            color: var(--gold);
-            letter-spacing: 3px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .pill-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .pill {
-            padding: 14px;
-            border: 1.5px solid var(--border);
-            background: white;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 14px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-        }
-
-        .pill.active {
-            background: var(--ink);
-            color: var(--paper);
-            border-color: var(--ink);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .pill:active {
-            transform: scale(0.96);
-        }
-
-        /* 主要按鈕 */
-        .start-btn {
-            margin-top: 30px;
-            padding: 18px;
-            background: var(--ink);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            letter-spacing: 4px;
-            border-radius: 8px;
-            width: 100%;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: 0.3s;
-        }
-
-        .start-btn:hover {
-            background: var(--gold);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(184,134,11,0.2);
-        }
-
-        /* 歷史紀錄按鈕 */
-        .history-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 15px;
-            padding: 14px;
-            background: white;
-            color: var(--ink);
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-family: 'Noto Serif TC', serif;
-            width: 100%;
-            text-decoration: none;
-            transition: 0.3s;
-            font-weight: 500;
-        }
-
-        .history-btn:hover {
-            color: var(--gold);
-            border-color: var(--gold);
-            background: rgba(184,134,11,0.05);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .history-btn svg {
-            fill: currentColor;
-            opacity: 0.8;
-        }
-
-        @media (min-width: 600px) {
-            .pill-group {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .pill {
-                min-width: 120px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/index.css">
 </head>
 <body>
-
 <div class="container">
-    <h1>初階外匯考古題練習站</h1>
-    <div class="sub">官方題庫 44-46 屆</div>
+    <h1>初階外匯考古題練習網站</h1>
+    <div class="sub">適用第 44-46 屆外匯測驗題庫</div>
 
     <div class="selection-box">
         <span class="label">SESSION</span>
@@ -190,14 +19,14 @@
             <div class="pill active" data-val="44">第 44 屆</div>
             <div class="pill" data-val="45">第 45 屆</div>
             <div class="pill" data-val="46">第 46 屆</div>
-            <div class="pill" data-val="all">模擬考模式</div>
+            <div class="pill" data-val="all">全部年度混合題庫</div>
         </div>
     </div>
 
     <div class="selection-box">
         <span class="label">SUBJECT</span>
         <div class="pill-group" id="subject-group">
-            <div class="pill active" data-val="remittance">國外匯兌業務</div>
+            <div class="pill active" data-val="remittance">外匯匯款</div>
             <div class="pill" data-val="trade">進出口外匯</div>
         </div>
     </div>
@@ -205,44 +34,30 @@
     <div class="selection-box">
         <span class="label">MODE</span>
         <div class="pill-group" id="mode-group">
-            <div class="pill active" data-val="practice">🎯 練習模式</div>
-            <div class="pill" data-val="exam">📝 考試模式</div>
+            <div class="pill active" data-val="practice">練習模式</div>
+            <div class="pill" data-val="exam">測驗模式</div>
         </div>
     </div>
 
-    <button class="start-btn" onclick="start()">開始測驗 START</button>
+    <button class="start-btn" id="start-btn" type="button">開始作答 START</button>
 
     <a href="history.html" class="history-btn">
         <svg width="16" height="16" viewBox="0 0 24 24">
             <path d="M13 3v6h8V3h-8zm6 4h-4V5h4v2zm-6 4v10h8V11h-8zm6 8h-4v-6h4v6zm-16 0h8v-6H3v6zm2-4h4v2H5v-2zm-2-10v10h8V3H3zm6 4H5V5h4v2z"/>
         </svg>
-        查看歷史成長趨勢報告
+        查看作答紀錄
     </a>
 
-    <a href="saved.html" class="history-btn" style="border-color: var(--gold); color: var(--gold);">
+    <a href="saved.html" class="history-btn history-btn-accent">
         <svg width="16" height="16" viewBox="0 0 24 24">
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
         </svg>
-        複習清單
+        查看收藏題目
     </a>
 </div>
-
-<script>
-    document.querySelectorAll('.pill').forEach(pill => {
-        pill.onclick = function() {
-            this.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-        };
-    });
-
-    // 開始測驗跳轉
-    function start() {
-        const s = document.querySelector('#session-group .active').dataset.val;
-        const sub = document.querySelector('#subject-group .active').dataset.val;
-        const m = document.querySelector('#mode-group .active').dataset.val;
-        window.location.href = `exam.html?s=${s}&sub=${sub}&m=${m}`;
-    }
-</script>
-
+<script src="assets/js/constants.js"></script>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/index.js"></script>
 </body>
 </html>

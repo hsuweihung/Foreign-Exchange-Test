@@ -1,171 +1,63 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>測驗報告</title>
+    <title>初階外匯考古題練習網站 - 作答結果</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Playfair+Display:wght@700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
-    <style>
-        :root { --ink: #1a1208; --paper: #f5f0e8; --gold: #b8860b; --border: #c8b99a; --red: #8b2020; --green: #1a4a2e; }
-        * { box-sizing: border-box; }
-        body { background: var(--paper); margin: 0; font-family: 'Noto Serif TC', serif; padding: 40px 20px calc(60px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; }
-        .result-card { background: white; padding: 40px 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-radius: 12px; width: 100%; max-width: 450px; border: 1px solid var(--border); margin-bottom: 30px; }
-        h2 { font-family: 'Playfair Display', serif; color: var(--gold); letter-spacing: 4px; margin: 0 0 15px; font-size: 1.2rem; }
-        .score-wrap { border-bottom: 2px solid #f8f8f8; padding-bottom: 25px; margin-bottom: 25px; }
-        .score { font-size: 110px; font-weight: bold; color: var(--ink); font-family: 'DM Mono'; line-height: 1; margin: 10px 0; }
-        .detail-box { display: flex; justify-content: space-around; }
-        .detail-item b { display: block; font-size: 26px; font-family: 'DM Mono'; margin-bottom: 5px; }
-        .detail-item small { color: #999; letter-spacing: 1px; font-size: 12px; }
-        .btn-group { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 450px; }
-        .btn { padding: 18px; background: var(--ink); color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-weight: bold; text-align: center; font-size: 16px; }
-        .btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
-
-        /* Gemini 複習建議卡 */
-        #gemini-recommend { width: 100%; max-width: 450px; margin-top: 20px; display: none; }
-        .recommend-card { background: white; border: 1.5px solid #4285f4; border-radius: 12px; padding: 18px 20px; box-shadow: 0 4px 15px rgba(66,133,244,0.1); }
-        .recommend-title { color: #4285f4; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
-        .recommend-body { font-size: 14px; line-height: 1.8; color: var(--ink); white-space: pre-wrap; }
-        .dot-bounce { display: inline-flex; gap: 4px; }
-        .dot-bounce span { width: 5px; height: 5px; background: #4285f4; border-radius: 50%; animation: bounce 1.2s infinite; }
-        .dot-bounce span:nth-child(2) { animation-delay: 0.2s; }
-        .dot-bounce span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
-
-        #wrong-section { width: 100%; max-width: 500px; margin-top: 40px; }
-        .wrong-title { color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 25px; font-size: 1.2rem; font-weight: bold; text-align: center; }
-        .wrong-item { background: white; border-left: 5px solid var(--red); padding: 25px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: left; }
-        .ans-correct { color: var(--green); font-weight: bold; font-size: 15px; margin-top: 10px; display: block; }
-        .ans-user { color: var(--red); font-size: 14px; margin-top: 5px; display: block; opacity: 0.8; }
-        .analysis-box { margin-top: 15px; padding: 15px; background: #fdfaf5; border: 1px dashed var(--border); border-radius: 6px; font-size: 14px; line-height: 1.6; color: #5d4a26; }
-        @media (max-width: 480px) { .score { font-size: 80px; } }
-    </style>
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/result.css">
 </head>
 <body>
     <div class="result-card">
         <h2>TEST REPORT</h2>
         <div class="score-wrap">
-            <small style="color:#bbb; letter-spacing:2px; font-weight:bold;">FINAL SCORE</small>
+            <small class="score-label">FINAL SCORE</small>
             <div class="score" id="score-val">0</div>
         </div>
         <div class="detail-box">
-            <div class="detail-item"><b id="res-correct" style="color:var(--green);">0</b><small>答對題數</small></div>
-            <div class="detail-item" style="border-left:1px solid #eee; padding-left:40px;"><b id="res-total">0</b><small>總題數</small></div>
+            <div class="detail-item"><b id="res-correct" class="correct-count">0</b><small>答對題數</small></div>
+            <div class="detail-item detail-item-divider"><b id="res-total">0</b><small>總題數</small></div>
         </div>
     </div>
 
     <div class="btn-group">
-        <a href="index.html" class="btn">重新開始測驗</a>
-        <a href="history.html" class="btn btn-outline">📊 查看歷史紀錄</a>
+        <a href="index.html" class="btn">
+            <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3l9 8h-3v10h-5v-6H11v6H6V11H3l9-8z"></path>
+            </svg>
+            返回首頁
+        </a>
+        <a href="history.html" class="btn btn-outline">
+            <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 10H6.2L5 14.2V5h14v8z"></path>
+            </svg>
+            查看作答紀錄
+        </a>
     </div>
 
     <div id="gemini-recommend">
         <div class="recommend-card">
             <div class="recommend-title">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2L9.5 9.5L2 12L9.5 14.5L12 22L14.5 14.5L22 12L14.5 9.5L12 2Z" fill="#4285f4"/></svg>
-                Gemini 複習建議
+                Gemini 練習建議
             </div>
             <div class="recommend-body" id="recommend-body">
-                <span style="color:#4285f4; font-size:13px; display:flex; align-items:center; gap:6px;">
-                    <span class="dot-bounce"><span></span><span></span><span></span></span> 分析本次錯題中…
+                <span class="recommend-loading">
+                    <span class="dot-bounce"><span></span><span></span><span></span></span> 正在整理你的弱點與建議...
                 </span>
             </div>
         </div>
     </div>
 
-    <div id="wrong-section" style="display:none;">
-        <div class="wrong-title">錯題解析</div>
+    <div id="wrong-section" class="hidden">
+        <div class="wrong-title">錯題整理</div>
         <div id="wrong-list"></div>
     </div>
 
-    <script>
-        const WORKER_URL = 'https://emini-proxy.19970923william.workers.dev';
-
-        window.onload = function() {
-            const data = JSON.parse(localStorage.getItem('last_result'));
-            const full = JSON.parse(localStorage.getItem('last_exam_full'));
-            if (!data) { setTimeout(() => { location.href = 'index.html'; }, 1000); return; }
-
-            let cur = 0; const target = parseFloat(data.score);
-            const scoreEl = document.getElementById('score-val');
-            if (target === 0) { scoreEl.textContent = "0"; }
-            else {
-                const t = setInterval(() => {
-                    cur += Math.ceil(target / 15);
-                    if (cur >= target) { scoreEl.textContent = target; clearInterval(t); }
-                    else { scoreEl.textContent = Math.floor(cur); }
-                }, 35);
-            }
-
-            document.getElementById('res-correct').textContent = data.correct;
-            document.getElementById('res-total').textContent = data.total;
-
-            if (full && full.questions) {
-                const list = document.getElementById('wrong-list');
-                let hasWrong = false;
-                full.questions.forEach((q, i) => {
-                    const userAns = full.answers[i];
-                    if (userAns !== null && userAns !== q.answer) {
-                        hasWrong = true;
-                        const div = document.createElement('div');
-                        div.className = 'wrong-item';
-                        div.innerHTML = `
-                            <div style="color:var(--gold); font-size:11px; font-family:'DM Mono'; margin-bottom:10px;">FROM 第 ${q._s || q.session} 屆 / 題號 ${q.id}</div>
-                            <div style="margin-bottom:15px; font-weight:bold; line-height:1.7; color:var(--ink); font-size:16px;">${q.text}</div>
-                            <span class="ans-correct">✓ 正確答案：${q.options[q.answer]}</span>
-                            <span class="ans-user">✗ 你的回答：${q.options[userAns]}</span>
-                            <div class="analysis-box"><b style="color:var(--gold);">💡 解析：</b><br>${q.analysis || '此題暫無詳細解析。'}</div>
-                        `;
-                        list.appendChild(div);
-                    }
-                });
-                if (hasWrong) {
-                    document.getElementById('wrong-section').style.display = 'block';
-                    fetchRecommendation(full);
-                }
-            }
-        };
-
-        async function fetchRecommendation(full) {
-            const wrongItems = full.questions.map((q, i) => ({ q, userAns: full.answers[i] }))
-                .filter(({ q, userAns }) => userAns !== null && userAns !== q.answer);
-            if (wrongItems.length === 0) return;
-
-            document.getElementById('gemini-recommend').style.display = 'block';
-
-            const wrongTexts = wrongItems.map(({ q, userAns }) =>
-                `- ${q.text}\n  ✗ 我答：${q.options[userAns]}　✓ 正確：${q.options[q.answer]}`
-            ).join('\n');
-
-            const prompt = `我剛完成一次台灣初階外匯人員考試練習，以下是這次答錯的題目：\n\n${wrongTexts}\n\n請根據這些錯題：\n1. 指出我這次主要的知識缺口（2-3點）\n2. 給出下次練習的具體建議\n請用繁體中文回答，簡潔有力，不超過150字。`;
-
-            try {
-                const res = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                        generationConfig: { temperature: 0.3, maxOutputTokens: 512 }
-                    })
-                });
-                const data = await res.json();
-                const body = document.getElementById('recommend-body');
-                if (data.error) {
-                    body.textContent = '⚠️ 無法取得建議，請稍後再試。';
-                } else {
-                    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                    body.textContent = '';
-                    let i = 0;
-                    const speed = Math.max(1, Math.floor(reply.length / 80));
-                    const interval = setInterval(() => {
-                        i += speed;
-                        body.textContent = reply.slice(0, i);
-                        if (i >= reply.length) { body.textContent = reply; clearInterval(interval); }
-                    }, 16);
-                }
-            } catch (e) {
-                document.getElementById('recommend-body').textContent = '⚠️ 網路錯誤，無法取得建議。';
-            }
-        }
-    </script>
+    <script src="assets/js/constants.js"></script>
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/result.js"></script>
 </body>
 </html>

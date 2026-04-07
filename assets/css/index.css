@@ -1,0 +1,171 @@
+        :root {
+            --ink: #1a1208;
+            --paper: #f5f0e8;
+            --gold: #b8860b;
+            --border: #c8b99a;
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'Noto Serif TC', serif;
+            margin: 0;
+            padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 10% 20%, rgba(184,134,11,0.05) 0%, transparent 40%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 8vw, 42px);
+            margin: 0;
+        }
+
+        .sub {
+            font-size: 0.9rem;
+            color: #6b5a3e;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .selection-box {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+        }
+
+        .label {
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .pill-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .pill {
+            padding: 14px;
+            border: 1.5px solid var(--border);
+            background: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .pill.active {
+            background: var(--ink);
+            color: var(--paper);
+            border-color: var(--ink);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .pill:active {
+            transform: scale(0.96);
+        }
+
+        /* 主要按鈕 */
+        .start-btn {
+            margin-top: 30px;
+            padding: 18px;
+            background: var(--ink);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            letter-spacing: 4px;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .start-btn:hover {
+            background: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(184,134,11,0.2);
+        }
+
+        /* 歷史紀錄按鈕 */
+        .history-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 14px;
+            background: white;
+            color: var(--ink);
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: 'Noto Serif TC', serif;
+            width: 100%;
+            text-decoration: none;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .history-btn:hover {
+            color: var(--gold);
+            border-color: var(--gold);
+            background: rgba(184,134,11,0.05);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .history-btn svg {
+            fill: currentColor;
+            opacity: 0.8;
+        }
+
+        @media (min-width: 600px) {
+            .pill-group {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .pill {
+                min-width: 120px;
+            }
+        }
+    

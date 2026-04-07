@@ -1,0 +1,237 @@
+        body {
+            background: var(--paper);
+            margin: 0;
+            padding: calc(16px + env(safe-area-inset-top)) 16px calc(90px + env(safe-area-inset-bottom));
+            font-family: 'Noto Serif TC', serif;
+            color: var(--ink);
+        }
+
+        .container { max-width: 760px; margin: 0 auto; }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .page-title { font-size: 18px; font-weight: bold; margin: 0; }
+
+        .header-actions { gap: 8px; flex-shrink: 0; }
+
+        /* Tab */
+        .tab-group { margin-bottom: 16px; }
+
+        .tab {
+            padding: 10px 6px;
+            font-size: 13px;
+            border-radius: 7px;
+            color: #999;
+        }
+
+        .tab-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: white;
+            font-size: 10px;
+            font-family: 'DM Mono', monospace;
+            padding: 1px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        /* 統計列 */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-mini {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 8px;
+            text-align: center;
+        }
+
+        .stat-mini span {
+            display: block;
+            font-size: 10px;
+            color: var(--gold);
+            letter-spacing: 0.5px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .stat-mini b {
+            font-size: 26px;
+            font-family: 'DM Mono', monospace;
+            line-height: 1;
+        }
+
+        /* 題目卡片 */
+        .q-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .q-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+
+        .q-card-meta {
+            font-size: 11px;
+            color: var(--gold);
+            font-family: 'DM Mono', monospace;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* 移除按鈕：pill style 同 exam.html 重答按鈕 */
+        .remove-btn {
+            font-size: 12px;
+            border: 1.5px solid var(--gold);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            background: #fffdf5;
+            color: var(--gold);
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-family: 'Noto Serif TC', serif;
+            transition: 0.15s;
+        }
+        .remove-btn:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+        .remove-btn:active { transform: scale(0.92); }
+
+        /* 問 Gemini 按鈕 */
+        .ask-gemini-card-btn {
+            font-size: 12px;
+            cursor: pointer;
+            border: 1.5px solid #4285f4;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            background: #fff;
+            color: #4285f4;
+            white-space: nowrap;
+            font-family: 'Noto Serif TC', serif;
+            transition: 0.15s;
+            margin-top: 12px;
+            display: inline-block;
+        }
+        .ask-gemini-card-btn:hover { background: #f0f4ff; }
+        .ask-gemini-card-btn:active { transform: scale(0.92); }
+
+        .q-card-text {
+            font-size: 15px;
+            line-height: 1.65;
+            color: var(--ink);
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+
+        .options-list { display: grid; gap: 7px; }
+
+        .opt-item {
+            padding: 10px 13px;
+            border: 1px solid #eee;
+            border-radius: 7px;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            line-height: 1.5;
+            background: #fafafa;
+        }
+
+        .opt-item.correct {
+            background: #eef5f1;
+            border-color: var(--green);
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        .opt-label {
+            font-family: 'DM Mono', monospace;
+            color: var(--gold);
+            margin-right: 10px;
+            font-weight: bold;
+            min-width: 26px;
+            flex-shrink: 0;
+        }
+
+        .opt-item.correct .opt-label { color: var(--green); }
+
+        .analysis-box {
+            margin-top: 12px;
+            padding: 13px 15px;
+            background: #fcf8ef;
+            border-left: 3px solid var(--gold);
+            font-size: 13px;
+            line-height: 1.65;
+            color: #5d4a26;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* 空白態 */
+        #empty-state {
+            display: none;
+            text-align: center;
+            padding: 70px 20px;
+            color: #bbb;
+        }
+        #empty-state .emoji { font-size: 44px; margin-bottom: 14px; }
+        #empty-state p { margin: 4px 0; font-size: 14px; }
+        #empty-state small { font-size: 12px; color: #ccc; }
+
+        /* 底部複習列 */
+        .practice-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.07);
+        }
+
+        .practice-bar-inner { max-width: 760px; margin: 0 auto; }
+
+        .practice-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--ink);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Noto Serif TC', serif;
+            letter-spacing: 2px;
+            transition: 0.2s;
+        }
+        .practice-btn:hover { background: var(--gold); }
+        .practice-btn:active { transform: scale(0.98); }
+
+        @media (max-width: 400px) {
+            .stat-mini span { font-size: 9px; }
+            .stat-mini b { font-size: 20px; }
+            .q-card-text { font-size: 14px; }
+        }
+    

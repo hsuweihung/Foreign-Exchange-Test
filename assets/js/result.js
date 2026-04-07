@@ -1,0 +1,125 @@
+﻿function initPage() {
+    const data = FXStorage.getLastResult();
+    const full = FXStorage.getLastExamFull();
+
+    if (!data) {
+        setTimeout(() => {
+            location.href = 'index.html';
+        }, 1000);
+        return;
+    }
+
+    animateScore(data.score);
+    document.getElementById('res-correct').textContent = data.correct;
+    document.getElementById('res-total').textContent = data.total;
+
+    if (full?.questions?.length) {
+        renderWrongQuestions(full);
+    }
+}
+
+function animateScore(targetScore) {
+    const scoreEl = document.getElementById('score-val');
+    const target = parseFloat(targetScore);
+
+    if (target === 0) {
+        scoreEl.textContent = '0';
+        return;
+    }
+
+    let current = 0;
+    const timer = setInterval(() => {
+        current += Math.ceil(target / 15);
+        if (current >= target) {
+            scoreEl.textContent = String(target);
+            clearInterval(timer);
+        } else {
+            scoreEl.textContent = String(Math.floor(current));
+        }
+    }, 35);
+}
+
+function renderWrongQuestions(full) {
+    const list = document.getElementById('wrong-list');
+    let hasWrong = false;
+
+    full.questions.forEach((question, index) => {
+        const userAnswer = full.answers[index];
+        if (userAnswer === null || userAnswer === question.answer) return;
+
+        hasWrong = true;
+        const div = document.createElement('div');
+        div.className = 'wrong-item';
+        div.innerHTML = `
+            <div class="wrong-item-meta">${FXConstants.getSessionLabel(question._s || question.session)} / 題號 ${question.id}</div>
+            <div class="wrong-item-text">${question.text}</div>
+            <span class="ans-correct">正確答案：${question.options[question.answer]}</span>
+            <span class="ans-user">你的答案：${question.options[userAnswer]}</span>
+            <div class="analysis-box"><b class="analysis-title">解析：</b><br>${question.analysis || FXConstants.fallbackAnalysis}</div>
+        `;
+        list.appendChild(div);
+    });
+
+    if (hasWrong) {
+        document.getElementById('wrong-section').classList.remove('hidden');
+        fetchRecommendation(full);
+    }
+}
+
+async function fetchRecommendation(full) {
+    const wrongItems = full.questions
+        .map((question, index) => ({ question, userAnswer: full.answers[index] }))
+        .filter(({ question, userAnswer }) => userAnswer !== null && userAnswer !== question.answer);
+
+    if (!wrongItems.length) return;
+
+    document.getElementById('gemini-recommend').style.display = 'block';
+
+    const prompt = [
+        '你是考前教練，請根據以下錯題整理 2-3 個最值得優先加強的觀念。',
+        wrongItems.map(({ question, userAnswer }) => {
+            return [
+                `- 題目：${question.text}`,
+                `  你的答案：${question.options[userAnswer]}`,
+                `  正確答案：${question.options[question.answer]}`
+            ].join('\n');
+        }).join('\n')
+    ].join('\n\n');
+
+    try {
+        const response = await fetch(FXConstants.workerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.3, maxOutputTokens: 512 }
+            })
+        });
+
+        const data = await response.json();
+        const body = document.getElementById('recommend-body');
+
+        if (data.error) {
+            body.textContent = `${FXConstants.gemini.errorPrefix}${data.error.message}`;
+            return;
+        }
+
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || FXConstants.gemini.noReply;
+        body.textContent = '';
+
+        let i = 0;
+        const step = Math.max(1, Math.floor(reply.length / 80));
+        const interval = setInterval(() => {
+            i += step;
+            body.textContent = reply.slice(0, i);
+            if (i >= reply.length) {
+                body.textContent = reply;
+                clearInterval(interval);
+            }
+        }, 16);
+    } catch (error) {
+        document.getElementById('recommend-body').textContent = `${FXConstants.gemini.errorPrefix}${error.message}`;
+    }
+}
+
+window.onload = initPage;

@@ -1,0 +1,40 @@
+        body { background: var(--paper); margin: 0; font-family: 'Noto Serif TC', serif; padding: 40px 20px calc(60px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; }
+        .result-card { background: white; padding: 40px 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-radius: 12px; width: 100%; max-width: 450px; border: 1px solid var(--border); margin-bottom: 30px; }
+        h2 { font-family: 'Playfair Display', serif; color: var(--gold); letter-spacing: 4px; margin: 0 0 15px; font-size: 1.2rem; }
+        .score-wrap { border-bottom: 2px solid #f8f8f8; padding-bottom: 25px; margin-bottom: 25px; }
+        .score { font-size: 110px; font-weight: bold; color: var(--ink); font-family: 'DM Mono'; line-height: 1; margin: 10px 0; }
+        .detail-box { display: flex; justify-content: space-around; }
+        .detail-item b { display: block; font-size: 26px; font-family: 'DM Mono'; margin-bottom: 5px; }
+        .detail-item small { color: #999; letter-spacing: 1px; font-size: 12px; }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 450px; }
+        .btn { padding: 18px; background: var(--ink); color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; font-weight: bold; text-align: center; font-size: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+
+        /* Gemini 複習建議卡 */
+        #gemini-recommend { width: 100%; max-width: 450px; margin-top: 20px; display: none; }
+        .recommend-card { background: white; border: 1.5px solid #4285f4; border-radius: 12px; padding: 18px 20px; box-shadow: 0 4px 15px rgba(66,133,244,0.1); }
+        .recommend-title { color: #4285f4; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .recommend-body { font-size: 14px; line-height: 1.8; color: var(--ink); white-space: pre-wrap; }
+        #wrong-section { width: 100%; max-width: 500px; margin-top: 40px; }
+        .wrong-title { color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 25px; font-size: 1.2rem; font-weight: bold; text-align: center; }
+        .wrong-item { background: white; border-left: 5px solid var(--red); padding: 25px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: left; }
+        .ans-correct { color: var(--green); font-weight: bold; font-size: 15px; margin-top: 10px; display: block; }
+        .ans-user { color: var(--red); font-size: 14px; margin-top: 5px; display: block; opacity: 0.8; }
+        .analysis-box { margin-top: 15px; padding: 15px; background: #fdfaf5; border: 1px dashed var(--border); border-radius: 6px; font-size: 14px; line-height: 1.6; color: #5d4a26; }
+        @media (max-width: 480px) { .score { font-size: 80px; } }
+    
+
+.wrong-item-meta {
+    color: var(--gold);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 10px;
+}
+
+.wrong-item-text {
+    margin-bottom: 15px;
+    font-weight: bold;
+    line-height: 1.7;
+    color: var(--ink);
+    font-size: 16px;
+}
