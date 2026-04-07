@@ -76,7 +76,9 @@ async function fetchRecommendation(full) {
     document.getElementById('gemini-recommend').style.display = 'block';
 
     const prompt = [
-        '你是考前教練，請根據以下錯題整理 2-3 個最值得優先加強的觀念。',
+        '你是考前教練，請用繁體中文做精簡摘要。',
+        '請整理為 3 點：1. 最該補強的觀念 2. 最常見的錯因 3. 下次作答提醒。',
+        '每點最多 2 句，不要長篇解析。',
         wrongItems.map(({ question, userAnswer }) => {
             return [
                 `- 題目：${question.text}`,
@@ -92,7 +94,7 @@ async function fetchRecommendation(full) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.3, maxOutputTokens: 512 }
+                generationConfig: { temperature: 0.2, maxOutputTokens: 320 }
             })
         });
 

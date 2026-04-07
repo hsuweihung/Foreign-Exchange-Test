@@ -175,7 +175,7 @@ async function callGemini(userText) {
         history: geminiHistory,
         userText,
         temperature: 0.3,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 420,
         onReply: (reply) => typewriterMsg(reply),
         onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
         onFinally: () => {

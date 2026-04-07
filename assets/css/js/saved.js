@@ -165,6 +165,8 @@ async function callGemini(userText) {
         inputEl: document.getElementById('chat-input'),
         history: geminiHistory,
         userText,
+        temperature: 0.2,
+        maxOutputTokens: 280,
         onReply: (reply) => typewriterMsg(reply),
         onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
         onFinally: () => {

@@ -22,15 +22,17 @@
     async function callGemini(userText) {
         state.geminiLoading = true;
 
-        await FXCommon.requestGemini({
-            bodyEl: document.getElementById('chat-body'),
-            sendBtn: document.getElementById('chat-send'),
-            inputEl: document.getElementById('chat-input'),
-            history: state.geminiHistory,
-            userText,
-            onReply: (reply) => typewriterMsg(reply),
-            onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
-            onFinally: () => {
+    await FXCommon.requestGemini({
+        bodyEl: document.getElementById('chat-body'),
+        sendBtn: document.getElementById('chat-send'),
+        inputEl: document.getElementById('chat-input'),
+        history: state.geminiHistory,
+        userText,
+        temperature: 0.2,
+        maxOutputTokens: 260,
+        onReply: (reply) => typewriterMsg(reply),
+        onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
+        onFinally: () => {
                 state.geminiLoading = false;
             }
         });
