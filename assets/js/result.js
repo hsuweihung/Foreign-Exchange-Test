@@ -1,4 +1,7 @@
-﻿function initPage() {
+﻿let geminiHistory = [];
+let geminiLoading = false;
+
+function initPage() {
     const data = FXStorage.getLastResult();
     const full = FXStorage.getLastExamFull();
 
@@ -9,6 +12,7 @@
         return;
     }
 
+    bindUI();
     animateScore(data.score);
     document.getElementById('res-correct').textContent = data.correct;
     document.getElementById('res-total').textContent = data.total;
@@ -66,6 +70,14 @@ function renderWrongQuestions(full) {
     }
 }
 
+function appendResultMsg(role, text) {
+    return FXCommon.appendMsg(document.getElementById('recommend-body'), role, text);
+}
+
+function typewriterResultMsg(text) {
+    FXCommon.typewriterMsg(document.getElementById('recommend-body'), text);
+}
+
 async function fetchRecommendation(full) {
     const wrongItems = full.questions
         .map((question, index) => ({ question, userAnswer: full.answers[index] }))
@@ -88,40 +100,50 @@ async function fetchRecommendation(full) {
         }).join('\n')
     ].join('\n\n');
 
-    try {
-        const response = await fetch(FXConstants.workerUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ role: 'user', parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.2, maxOutputTokens: 320 }
-            })
-        });
+    geminiHistory = [];
+    document.getElementById('recommend-body').innerHTML = '';
+    document.getElementById('result-chat-row').classList.add('hidden');
 
-        const data = await response.json();
-        const body = document.getElementById('recommend-body');
+    await callGemini(prompt, { maxOutputTokens: 320, isInitial: true });
+    document.getElementById('result-chat-row').classList.remove('hidden');
+}
 
-        if (data.error) {
-            body.textContent = `${FXConstants.gemini.errorPrefix}${data.error.message}`;
-            return;
+async function callGemini(userText, { maxOutputTokens = 1200, isInitial = false } = {}) {
+    geminiLoading = true;
+
+    await FXCommon.requestGemini({
+        bodyEl: document.getElementById('recommend-body'),
+        sendBtn: document.getElementById('result-chat-send'),
+        inputEl: document.getElementById('result-chat-input'),
+        history: geminiHistory,
+        userText,
+        temperature: 0.2,
+        maxOutputTokens,
+        onReply: (reply) => {
+            if (isInitial) typewriterResultMsg(reply);
+            else typewriterResultMsg(reply);
+        },
+        onError: (message) => appendResultMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
+        onFinally: () => {
+            geminiLoading = false;
+            document.getElementById('result-chat-input').focus();
         }
+    });
+}
 
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || FXConstants.gemini.noReply;
-        body.textContent = '';
+async function sendChat() {
+    const input = document.getElementById('result-chat-input');
+    const text = input.value.trim();
+    if (!text || geminiLoading) return;
 
-        let i = 0;
-        const step = Math.max(1, Math.floor(reply.length / 80));
-        const interval = setInterval(() => {
-            i += step;
-            body.textContent = reply.slice(0, i);
-            if (i >= reply.length) {
-                body.textContent = reply;
-                clearInterval(interval);
-            }
-        }, 16);
-    } catch (error) {
-        document.getElementById('recommend-body').textContent = `${FXConstants.gemini.errorPrefix}${error.message}`;
-    }
+    input.value = '';
+    appendResultMsg('user', text);
+    await callGemini(text, { maxOutputTokens: 1200 });
+}
+
+function bindUI() {
+    document.getElementById('result-chat-send').addEventListener('click', sendChat);
+    FXCommon.bindEnterToSend(document.getElementById('result-chat-input'), sendChat);
 }
 
 window.onload = initPage;

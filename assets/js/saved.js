@@ -165,6 +165,7 @@ function typewriterMsg(text) {
 
 async function callGemini(userText) {
     geminiLoading = true;
+    const isFirstTurn = geminiHistory.length === 0;
 
     await FXCommon.requestGemini({
         bodyEl: document.getElementById('chat-body'),
@@ -173,8 +174,8 @@ async function callGemini(userText) {
         history: geminiHistory,
         userText,
         temperature: 0.2,
-        maxOutputTokens: 280,
-        transformReply: (reply) => compactReply(reply, { maxChars: 180, maxLines: 5 }),
+        maxOutputTokens: isFirstTurn ? 280 : 1200,
+        transformReply: isFirstTurn ? (reply) => compactReply(reply, { maxChars: 180, maxLines: 5 }) : undefined,
         onReply: (reply) => typewriterMsg(reply),
         onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
         onFinally: () => {

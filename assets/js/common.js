@@ -196,9 +196,9 @@
             }
 
             const rawReply = data.candidates?.[0]?.content?.parts?.[0]?.text || FXConstants.gemini.noReply;
-            const reply = transformReply ? transformReply(rawReply) : rawReply;
-            history.push({ role: 'model', parts: [{ text: reply }] });
-            onReply?.(reply);
+            const displayReply = transformReply ? transformReply(rawReply) : rawReply;
+            history.push({ role: 'model', parts: [{ text: rawReply }] });
+            onReply?.(displayReply, rawReply);
         } catch (error) {
             loader.remove();
             history.pop();
