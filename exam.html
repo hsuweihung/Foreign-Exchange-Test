@@ -94,6 +94,11 @@
         .nav-dot.answered { background: var(--ink); color: white; border-color: var(--ink); }
         .nav-dot.current { border: 2px solid var(--gold); color: var(--gold); font-weight: bold; }
 
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 480px) {
             .header-inner { grid-template-columns: 75px 1fr 75px; }
             .home-icon span { display: none; }
@@ -179,19 +184,25 @@
         const SESSION_KEY = `exam_session_${config.s}_${config.sub}_${config.m}`;
 
         function saveSession() {
-            sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+            localStorage.setItem(SESSION_KEY, JSON.stringify({
                 questions: currentQuestions,
                 answers: userAnswers,
-                idx: curIdx
+                idx: curIdx,
+                savedAt: Date.now()
             }));
         }
 
         function loadSession() {
             try {
-                const raw = sessionStorage.getItem(SESSION_KEY);
+                const raw = localStorage.getItem(SESSION_KEY);
                 if (!raw) return false;
                 const saved = JSON.parse(raw);
                 if (!saved.questions || !saved.questions.length) return false;
+                // 超過 7 天自動放棄（避免舊資料卡住）
+                if (saved.savedAt && Date.now() - saved.savedAt > 7 * 24 * 60 * 60 * 1000) {
+                    localStorage.removeItem(SESSION_KEY);
+                    return false;
+                }
                 currentQuestions = saved.questions;
                 userAnswers = saved.answers;
                 curIdx = saved.idx || 0;
@@ -208,6 +219,7 @@
                 document.getElementById('header-title').textContent = config.s === 'saved' ? `★ ${subLabel} 收藏複習` : subLabel;
                 renderQuestion();
                 updateStatus();
+                showResumeBanner();
                 return;
             }
 
@@ -370,9 +382,30 @@
         }
         // ─────────────────────────────────────────────────────
 
+        function showResumeBanner() {
+            const banner = document.createElement('div');
+            banner.id = 'resume-banner';
+            banner.style.cssText = `
+                position: fixed; top: calc(52px + env(safe-area-inset-top)); left: 0; width: 100%;
+                background: #1a4a2e; color: white; text-align: center;
+                padding: 10px 16px; font-size: 13px; z-index: 99;
+                display: flex; align-items: center; justify-content: center; gap: 10px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2); animation: slideDown 0.4s ease;
+            `;
+            banner.innerHTML = `
+                <span>📌 已還原上次進度（第 ${curIdx + 1} 題）</span>
+                <button onclick="document.getElementById('resume-banner').remove()" style="
+                    background: rgba(255,255,255,0.2); border: none; color: white;
+                    border-radius: 12px; padding: 3px 10px; cursor: pointer; font-size: 12px;
+                ">✕</button>
+            `;
+            document.body.appendChild(banner);
+            setTimeout(() => { if (banner.parentNode) banner.remove(); }, 4000);
+        }
+
         function goHome() {
             if (confirm('確定要回首頁嗎？測驗進度將不予儲存。')) {
-                sessionStorage.removeItem(SESSION_KEY);
+                localStorage.removeItem(SESSION_KEY);
                 window.location.href = 'index.html';
             }
         }
@@ -422,7 +455,7 @@
                 localStorage.setItem('exam_history', JSON.stringify(hist));
             }
 
-            sessionStorage.removeItem(SESSION_KEY);
+            localStorage.removeItem(SESSION_KEY);
             window.location.href = `result.html?score=${finalScore}&correct=${correctCount}&total=${currentQuestions.length}`;
         }
 
