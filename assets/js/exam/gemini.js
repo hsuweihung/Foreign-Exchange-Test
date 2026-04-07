@@ -28,8 +28,8 @@
             inputEl: document.getElementById('chat-input'),
             history: state.geminiHistory,
             userText,
-            temperature: 0.25,
-            maxOutputTokens: 520,
+            temperature: 0.3,
+            maxOutputTokens: 900,
             onReply: (reply) => typewriterMsg(reply),
             onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
             onFinally: () => {
