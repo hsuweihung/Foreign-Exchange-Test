@@ -170,7 +170,7 @@
             const tbody = document.getElementById('history-body');
             tbody.innerHTML = filteredData.length > 0 ? filteredData.map(h => {
                 const sessionLabel = !h.session || h.session === 'all' ? '模擬考' : `第 ${h.session} 屆`;
-                const modeLabel = h.mode || '練習模式';
+                const modeLabel = h.mode === 'exam' ? '考試模式' : h.mode === 'practice' ? '練習模式' : (h.mode || '練習模式');
                 const displayLabel = `${modeLabel} · ${sessionLabel}`;
                 return `<tr>
                     <td>${h.timestamp.split(' ')[0].slice(5)}</td>
