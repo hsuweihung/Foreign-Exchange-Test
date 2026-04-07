@@ -106,10 +106,7 @@ async function fetchRecommendation(full) {
             return;
         }
 
-        const rawReply = data.candidates?.[0]?.content?.parts?.[0]?.text || FXConstants.gemini.noReply;
-        const reply = typeof FXCommon.compactReply === 'function'
-            ? FXCommon.compactReply(rawReply, { maxChars: 220, maxLines: 5 })
-            : rawReply;
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || FXConstants.gemini.noReply;
         body.textContent = '';
 
         let i = 0;

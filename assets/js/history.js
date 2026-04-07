@@ -4,13 +4,6 @@ let fullHistory = [];
 let geminiHistory = [];
 let geminiLoading = false;
 
-const compactReply = (reply, options) => {
-    if (typeof FXCommon.compactReply === 'function') {
-        return FXCommon.compactReply(reply, options);
-    }
-    return reply;
-};
-
 const chartLimitLinePlugin = {
     id: 'chartLimitLine',
     afterDraw(chart, args, options) {
@@ -174,6 +167,7 @@ function typewriterMsg(text) {
 
 async function callGemini(userText) {
     geminiLoading = true;
+    const isFirstTurn = geminiHistory.length === 0;
 
     await FXCommon.requestGemini({
         bodyEl: document.getElementById('chat-body'),
@@ -182,8 +176,7 @@ async function callGemini(userText) {
         history: geminiHistory,
         userText,
         temperature: 0.3,
-        maxOutputTokens: 420,
-        transformReply: (reply) => compactReply(reply, { maxChars: 240, maxLines: 6 }),
+        maxOutputTokens: isFirstTurn ? 320 : 1200,
         onReply: (reply) => typewriterMsg(reply),
         onError: (message) => appendMsg('gemini', `${FXConstants.gemini.errorPrefix}${message}`),
         onFinally: () => {
