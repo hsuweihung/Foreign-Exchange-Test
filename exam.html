@@ -405,7 +405,8 @@
                 total: currentQuestions.length,
                 score: finalScore,
                 subject: config.sub === 'trade' ? '進出口外匯' : '國外匯兌',
-                session: config.s
+                session: config.s,
+                mode: config.m === 'exam' ? '考試模式' : '練習模式'
             };
             const resultFull = {
                 questions: currentQuestions.map(q => ({...q, _s: q.session})),

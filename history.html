@@ -88,7 +88,7 @@
 
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>日期</th><th>屆別</th><th>得分</th><th>狀態</th></tr></thead>
+                    <thead><tr><th>日期</th><th>模式・屆別</th><th>得分</th><th>狀態</th></tr></thead>
                     <tbody id="history-body"></tbody>
                 </table>
             </div>
@@ -170,9 +170,11 @@
             const tbody = document.getElementById('history-body');
             tbody.innerHTML = filteredData.length > 0 ? filteredData.map(h => {
                 const sessionLabel = !h.session || h.session === 'all' ? '模擬考' : `第 ${h.session} 屆`;
+                const modeLabel = h.mode || '練習模式';
+                const displayLabel = `${modeLabel} · ${sessionLabel}`;
                 return `<tr>
                     <td>${h.timestamp.split(' ')[0].slice(5)}</td>
-                    <td style="font-size:12px; color:#888;">${sessionLabel}</td>
+                    <td style="font-size:12px; color:#888;">${displayLabel}</td>
                     <td style="font-family:'DM Mono'; font-weight:bold;">${h.score}</td>
                     <td style="color:${h.score >= 70 ? 'var(--green)' : 'var(--red)'}">${h.score >= 70 ? '合格' : '待加強'}</td>
                 </tr>`;
